@@ -1,0 +1,1760 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>N-of-1 Oncology Clinic - Operating Plan Wiki</title>
+<style>
+  :root {
+    --ink: #0e1726;
+    --ink-2: #2a3a55;
+    --muted: #5d6b80;
+    --line: #d9dee7;
+    --bg: #fbfbfc;
+    --panel: #ffffff;
+    --accent: #0d8a8a;
+    --accent-2: #6d3bd0;
+    --warn: #c4520f;
+    --good: #137333;
+    --tag-bg: #eef2f9;
+    --tag-ink: #36486a;
+    --code-bg: #f4f5f8;
+    --shadow: 0 1px 0 rgba(20,30,50,.04), 0 6px 24px rgba(20,30,50,.05);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font: 15.5px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 28px 80px; }
+  header.title {
+    border-bottom: 1px solid var(--line); padding-bottom: 22px; margin-bottom: 24px;
+  }
+  header.title .kicker { color: var(--muted); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+  header.title h1 { font-size: 30px; line-height: 1.18; margin: 6px 0 8px; letter-spacing: -0.01em; }
+  header.title .lede { color: var(--ink-2); font-size: 16px; max-width: 880px; }
+  header.title .meta { color: var(--muted); font-size: 13px; margin-top: 12px; }
+  .layout { display: grid; grid-template-columns: 240px 1fr; gap: 36px; }
+  nav.toc {
+    position: sticky; top: 18px; align-self: start;
+    border-left: 2px solid var(--line); padding-left: 16px;
+    font-size: 13.5px; max-height: calc(100vh - 40px); overflow-y: auto;
+  }
+  nav.toc h4 { font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 8px; }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; counter-reset: secs; }
+  nav.toc ol li { counter-increment: secs; margin: 4px 0; }
+  nav.toc ol li::before { content: counter(secs, decimal) ". "; color: var(--muted); }
+  nav.toc a { color: var(--ink-2); }
+  nav.toc a:hover { color: var(--accent); }
+
+  main { min-width: 0; }
+  section { margin: 0 0 48px; }
+  section h2 {
+    font-size: 22px; letter-spacing: -0.01em; margin: 0 0 10px;
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  section h2 .num { color: var(--muted); font-size: 13px; font-weight: 500; letter-spacing: .12em; }
+  section h3 { font-size: 17px; margin: 22px 0 6px; }
+  section h4 { font-size: 14.5px; margin: 18px 0 4px; color: var(--ink-2); }
+  p { margin: 8px 0; }
+  ul, ol { padding-left: 22px; margin: 8px 0; }
+  ul li, ol li { margin: 4px 0; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 20px; margin: 14px 0; box-shadow: var(--shadow);
+  }
+  .panel.tight { padding: 14px 16px; }
+  .panel.callout { border-left: 4px solid var(--accent); }
+  .panel.warn { border-left: 4px solid var(--warn); background: #fffdf6; }
+  .panel.good { border-left: 4px solid var(--good); background: #f5fbf6; }
+  .panel.decision { border-left: 4px solid var(--accent-2); background: #faf7ff; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 900px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; max-height: none; }
+  }
+
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+  .card h4 { margin-top: 0; }
+  .card.tinted { background: #fafbff; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: #f3f5f9; font-weight: 600; color: var(--ink-2); font-size: 13px; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.total td { border-top: 2px solid var(--ink-2); font-weight: 700; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0 6px; }
+  .stat-row .stat { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+  .stat-row .stat .big { font-weight: 700; font-size: 22px; letter-spacing: -.01em; color: var(--ink); display: block; }
+  .stat-row .stat .lbl { color: var(--muted); font-size: 12px; display: block; margin-top: 2px; }
+  .stat-row .stat .foot { color: var(--muted); font-size: 11px; margin-top: 4px; display: block; }
+  @media (max-width: 700px) { .stat-row { grid-template-columns: 1fr 1fr; } }
+
+  .badge { background: var(--tag-bg); color: var(--tag-ink); padding: 2px 9px; border-radius: 999px; font-size: 12px; display: inline-block; }
+  .badge.good { background: #def4ef; color: #075b4e; }
+  .badge.warn { background: #ffe2db; color: #8c2510; }
+  .badge.q { background: #ece1ff; color: #4a1b9c; }
+  .badge.t1 { background: #def4ef; color: #075b4e; }
+  .badge.t2 { background: #ece1ff; color: #4a1b9c; }
+  .badge.t3 { background: #ffe2db; color: #8c2510; }
+
+  .footnote { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+
+  .know, .question, .flag {
+    padding: 10px 14px; border-radius: 6px; margin: 6px 0; font-size: 13.5px;
+    border-left: 3px solid;
+  }
+  .know { background: #f0f9f3; border-left-color: var(--good); }
+  .question { background: #f0f4fb; border-left-color: #2c4a7a; }
+  .flag { background: #fdf5e7; border-left-color: var(--warn); }
+  .know .lbl, .question .lbl, .flag .lbl {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: .1em; font-weight: 700;
+    margin-right: 8px; padding: 1px 6px; border-radius: 3px;
+  }
+  .know .lbl { background: var(--good); color: #fff; }
+  .question .lbl { background: #2c4a7a; color: #fff; }
+  .flag .lbl { background: var(--warn); color: #fff; }
+  .conf { font-size: 11px; color: var(--muted); margin-left: 8px; }
+
+  .timeline-bar {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+    margin: 14px 0 18px;
+  }
+  .timeline-bar .stage {
+    border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13px;
+  }
+  .timeline-bar .stage .name { font-weight: 700; font-size: 14px; }
+  .timeline-bar .stage .months { font-size: 11px; opacity: .9; letter-spacing: .04em; }
+  .timeline-bar .stage .what { font-size: 12px; opacity: .92; margin-top: 4px; }
+  .timeline-bar .p1 { background: #0d8a8a; }
+  .timeline-bar .p2 { background: #1e7ab9; }
+  .timeline-bar .p3 { background: #6d3bd0; }
+  .timeline-bar .p4 { background: #c4520f; }
+  @media (max-width: 700px) { .timeline-bar { grid-template-columns: 1fr 1fr; } }
+
+  .module {
+    border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px;
+    margin: 10px 0; background: #fff;
+  }
+  .module-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .module-num {
+    width: 28px; height: 28px; border-radius: 6px; background: var(--ink); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;
+  }
+  .module h3 { margin: 0; font-size: 16px; }
+
+  /* Right-bleed wrapper: keeps the left edge aligned with main-column content
+     (so the TOC stays uncovered), extends the right edge past .wrap to the viewport.
+     Used for the Sankey diagram in §3 to gain more width without breaking left alignment. */
+  .sankey-wide {
+    position: relative;
+    z-index: 0;
+    padding-right: 24px;
+    box-sizing: border-box;
+  }
+  .sankey-wide .inner {
+    /* No max-width cap needed; viewport bounds it naturally. */
+  }
+  @media (min-width: 1180px) {
+    .sankey-wide {
+      /* Extends right edge from main column's right to viewport's right.
+         Negative when vw > 1180, exactly bridging the gap outside .wrap. */
+      margin-right: calc((1180px - 100vw) / 2);
+    }
+  }
+  @media (max-width: 1100px) {
+    .sankey-wide { padding-right: 0; }
+  }
+
+  /* Sankey legend + stream description, rendered as HTML below the SVG for proper
+     flex-wrap layout (avoiding the SVG-text overlap problem at scaled-down widths). */
+  .sankey-legend {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .sankey-streams {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 8px 20px;
+    margin-bottom: 14px;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+  .sankey-streams .stream-item { padding: 2px 0; }
+  .sankey-streams .stream-item strong { color: var(--ink); }
+  .sankey-legend-title {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin: 4px 0 6px;
+  }
+  .sankey-legend-items {
+    display: flex; flex-wrap: wrap;
+    gap: 6px 18px; font-size: 12.5px;
+    color: var(--ink-2);
+  }
+  .sl-item {
+    display: inline-flex; align-items: center;
+    gap: 7px; white-space: nowrap;
+  }
+  .sl-sw {
+    width: 12px; height: 12px;
+    border-radius: 2px; display: inline-block; flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+</style>
+</head>
+<body class="">
+<div class="wrap">
+
+<header class="title">
+  <div class="kicker">N-of-1 Oncology · Operating Plan Wiki · 18-month seed window</div>
+  <h1>End Cancer Inc - Operating Plan Wiki</h1>
+  <div class="lede">Operating plan for the 18-month $12–15M seed window. The plan threads together what we know and what we'll build (clinical, lab, data, AI, access, GTM, monitoring).&nbsp;</div>
+</header>
+
+<div class="layout">
+
+<nav class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#summary">Executive summary</a></li>
+    <li><a href="#thesis">Thesis &amp; why now</a></li>
+    <li><a href="#customer">Customer &amp; the bimodal 600K cohort</a></li>
+    <li><a href="#product">Product structure</a></li>
+    <li><a href="#indications">Launch indications</a></li>
+    <li><a href="#journey">Patient journey - 6 modules</a></li>
+    <li><a href="#lab">Sample &amp; lab logistics</a></li>
+    <li><a href="#ai">AI / decision-support architecture</a></li>
+    <li><a href="#tumorboard">Tumor board model</a></li>
+    <li><a href="#access">Drug access architecture</a></li>
+    <li><a href="#monitoring">Monitoring stack</a></li>
+    <li><a href="#gtm">Channel &amp; GTM</a></li>
+    <li><a href="#pricing">Pricing &amp; access policy</a></li>
+    <li><a href="#org">Org &amp; 18-month hiring</a></li>
+    <li><a href="#vendors">Vendor &amp; partnership architecture</a></li>
+    <li><a href="#compliance">Compliance, regulatory, multi-state</a></li>
+    <li><a href="#structure">Corporate structure decision</a></li>
+    <li><a href="#allocation">$12–15M allocation &amp; milestones</a></li>
+    <li><a href="#risks">Risk register</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ============================ 1. EXECUTIVE SUMMARY ============================ -->
+<section id="summary">
+<h2><span class="num">1.</span>Summary</h2>
+
+<p>This is the operating plan for an N-of-1 oncology clinic - the level of personalized cancer decision-making that fully-resourced patient cases have demonstrated is possible, but with the goal of making it accessible at 10–100× lower cost.&nbsp;</p>
+
+<div class="stat-row">
+  <div class="stat"><span class="big">$12–15M</span><span class="lbl"><b>Operating seed</b></span><span class="foot">Separate from any cap-table cleanup with existing Travera investors</span></div>
+  <div class="stat"><span class="big">18 mo</span><span class="lbl"><b>Plan horizon</b></span><span class="foot">Demonstrate paying episodes to sustainable economics by Month 18</span></div>
+  <div class="stat"><span class="big">2 indications</span><span class="lbl"><b>Major decision points wedge</b></span><span class="foot">Recurrent ovarian (~15K/yr)<br>&nbsp;+ Sarcoma (~15K/yr)</span></div>
+  <div class="stat"><span class="big">~600K</span><span class="lbl"><b>Next TAM</b></span><span class="foot">408K rare-histology <br>+ 192K salvage</span></div>
+</div>
+
+<h3>One-line thesis</h3>
+<div class="panel callout">
+<p><strong>Build the long-term decision-making framework for oncology - where therapy is guided by a patient's personal data, not by guideline algorithms.</strong> Anchor it on Travera's functional + molecular + immune stack, layer on in-house AI and ops, and prove the model on two large indications that together span the rare-cancer cohort's two halves.</p>
+</div>
+
+<h3>What we'll have proven by month 18</h3>
+<div class="grid-4">
+  <div class="card">
+    <h4>Patients pay</h4>
+    <p style="font-size:14px;">30 completed paying episodes at cost.</p><div><br><div>Mix of organic, AMC-referred, and registry-discounted patients.&nbsp;</div><div><br></div><div>Demand validation outside the narrow concierge / flagship-patient channel.</div></div><p></p>
+  </div>
+  <div class="card">
+    <h4>Physicians refer</h4>
+    <p style="font-size:14px;">Embedded relationships at DFCI, Vanderbilt, UCSF for ovarian + sarcoma.</p><div><br></div><div>Tumor-board input format adopted by ≥3 AMC MTBs. Repeat referrals from named oncologists, not one-off cases.</div><p></p>
+  </div>
+  <div class="card">
+    <h4>Recommendations change decisions</h4>
+    <p style="font-size:14px;">Documented decision-change rate (our recommendation diverges from local plan and is acted on) in a target range we'll set with the clinical leads - early data on whether the report is shifting drug choice, sequencing, or surgical decisions.</p>
+  </div>
+  <div class="card">
+    <h4>Outcomes &amp; data become valuable</h4>
+    <p style="font-size:14px;">First outcomes register published. First pharma services SOW or data partnership signed. <br><br>Variantyx distributed-CLIA reporting live for paired functional+molecular billing.</p>
+  </div>
+</div>
+
+<h3>What's already true (reduces execution risk)</h3>
+<ul>
+  <li>Travera CLIA-certified in 50 states + NYS-CLEP; RTS + NOVA validated (JCO PO 2024 OR 12.6; AACR 2025 AUC 0.86 paired)</li>
+  <li>Immune-fingerprint stability validated (bioRxiv 2026) - enables longitudinal monitoring with a biologically meaningful baseline</li>
+  <li>RCRF tissue + biobanking + clinical-history retrieval muscle exists; informal MSA in place (Christine Spencer, Marshall)</li>
+  <li>Vanderbilt histotripsy study running monthly blood + functional immune monitoring - live monitoring proof point</li>
+  <li>Variantyx distributed-CLIA partnership feasible in 6–12 months on a mature workflow (12–18 months for new assays)</li>
+  <li>Rob Kimmerling, Selim Olcum at Travera with the platform; KV portfolio access to small-molecule + peptide synthesis + in vitro modeling + sequencing.</li>
+</ul>
+
+<h3>What we're explicitly choosing not to do</h3>
+<ul>
+  <li><strong>Not</strong> launching as all-comer - recurrent ovarian + sarcoma only at first</li>
+  <li><strong>Not</strong> defaulting patients to the premium tier - the core product price point TBD (at cost); premium add-ons exists opportunistically, but capabilities will be explored in this raise.</li>
+  <li><strong>Not</strong> building a foundation model in seed-window - v1 AI is a retrieval + ranking copilot under human supervision; the foundation-model push is a post-seed bet</li>
+  <li><strong>Not</strong> bringing bespoke manufacturing in-house - engage selected partners for protocolized pilots only</li>
+  <li><strong>Not</strong> chasing volume-based reimbursement as the underwriting assumption - treat reimbursement as partial offset on the molecular assay</li>
+  <li><strong>Not</strong> merging with any existing entity</li>
+</ul>
+</section>
+
+<!-- ============================ 2. THESIS ============================ -->
+<section id="thesis">
+<h2><span class="num">2.</span> Thesis &amp; why now</h2>
+
+<h3>The clinical problem we're built around</h3>
+<p>Modern oncology's care-delivery model emerged in the 1950s under microscopy-era assumptions and has never been re-architected around individual tumor biology. NGS sharpened resolution but didn't escape the paradigm - it just produced smaller, better-defined population subgroups, not patient-level treatment answers.</p>
+
+<div class="stat-row">
+  <div class="stat"><span class="big">&gt;270</span><span class="lbl">FDA-approved cancer drugs (2L+)</span><span class="foot"></span></div>
+  <div class="stat"><span class="big">&lt;25%</span><span class="lbl">of those patients benefit</span><span class="foot"></span></div>
+  <div class="stat"><span class="big">&lt;12.5%</span><span class="lbl">of ICI patients benefit, despite broad use</span><span class="foot"></span></div>
+  <div class="stat"><span class="big">6.3%</span><span class="lbl">of US adult cancer patients in treatment trials</span><span class="foot"><br></span></div>
+</div>
+
+<h3>Why now<div><span style="font-weight: normal; color: rgb(42, 58, 85); font-size: 14.5px; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Inter, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif;">Labor cost, speed, and domain expertise were barriers to creating this infrastructure before. Compute, data breadth, and costs are improving exponentially, and the first wave of personalized medicine is starting to emerge.</span></div></h3>
+<div class="grid-3">
+  <div class="card">
+    <h4>Compute &amp; data integration</h4>
+    <p style="font-size:14px;">Multi-omic integration is no longer the bottleneck. Turning raw functional + molecular + immune + ctDNA into next best decisioning is a tech problem, not a research problem.</p>
+  </div>
+  <div class="card">
+    <h4>Biologically distinguishable data</h4>
+    <p style="font-size:14px;">High-content patient-level data - Travera's biophysical functional signal, single-cell molecular, ultra-sensitive MRD - is feasible at clinical scale today, not 5 years out.</p>
+  </div>
+  <div class="card">
+    <h4>Cost curve bending</h4>
+    <p style="font-size:14px;">Sequencing, manufacturing, and bespoke-therapy tooling are on a 5-year glide path that makes fully-resourced personalized care plausible at 10–100× lower cost. The window to build the infrastructure is now.</p>
+  </div>
+</div>
+
+<h3>Why a startup, not an incumbent</h3>
+<p>Structural barriers in every adjacent player make this addressable by a from-scratch clinic, not an existing one:</p>
+<ul>
+  <li><strong>AMCs</strong> over-index on guideline adherence and trial enrollment. Bigger and better the AMC, the most dependent on streamlined big pharma clinical trial pipeline vs. personalized route. Personalized treatment outside guidelines <u>disqualifies</u> patients from bigger trials, creating perverse incentives against tailoring.</li>
+  <li><strong>Community oncology</strong> is volume- and cost-constrained, with tumor boards that exist mostly for accreditation. Specialists are rare; off-label exposure is feared.</li>
+  <li><strong>Diagnostic incumbents</strong> (Tempus, Caris, Guardant, FMI, Natera) are built on volume-based reimbursement - the larger their data asset, the greater their structural disincentive to disrupt it.&nbsp;Economics of patient-as-customer doesn't mesh with reimbursement paradigm core to their business.</li>
+</ul>
+
+<div class="panel callout"><b>We have to&nbsp;</b>Build the company that makes fully-resourced personalized care - three independent test types running in parallel, off-label combinations grounded in functional evidence, longitudinal immune-state monitoring through experimental therapy - available as a coherent, repeatable service.&nbsp;</div>
+
+<h3>What "fully-resourced personalized care, made accessible" means concretely</h3>
+<table>
+  <thead><tr><th>Fully-resourced cases have</th><th>Why most patients don't</th><th>Our analog at the core decision episode</th></tr></thead>
+  <tbody>
+    <tr><td>Multi-vendor concierge navigation pulling functional + molecular + immune data</td><td>Concierge is $100K+/yr for primary care alone before testing</td><td>One coordinated workflow - RCRF tissue ops + Travera functional + Variantyx-routed molecular + MRD vendor, single report</td></tr>
+    <tr><td>Off-label drug combination (eg., Ipi + Dostar) prescribed despite zero population evidence</td><td>Local oncologist won't prescribe off-label without dossier; payer won't cover</td><td>4-lane drug access architecture: sponsor expanded access, managed-access specialists, NCATS/dormant-asset routes, internal access team</td></tr>
+    <tr><td>Longitudinal immune-state monitoring through experimental therapy, with biologically meaningful baselines</td><td>Monitoring is fragmented; no longitudinal product owns the patient timeline</td><td>Monitoring-subscription layer with cohort-specific cadence; portable dashboard, FHIR/USCDI-compliant</td></tr>
+    <tr><td>"20 things ready to try" at every progression</td><td>Most patients get 1–2 options at progression, often guideline-default</td><td>AI retrieval/ranking copilot continuously curating the arsenal - literature, approvals, trials, sponsor access policies, internal outcomes</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ============================ 3. CUSTOMER ============================ -->
+<section id="customer">
+<h2><span class="num">3.</span> Customer &amp; the bimodal 600K cohort</h2>
+
+<h3>Who the clinic is built for</h3>
+<p>The single most consequential design choice is <em>who the customer is</em>. We follow the established patient-as-customer framing: <em>the patient is the customer</em>. Every downstream decision cascades from that.</p>
+
+<p>"Every patient becomes a rare-cancer patient once they're past guidelines." That isn't a marketing line - it's a structural observation. Across 14 common cancers, 18.6% of patients receive off-label treatment and 4.4% receive off-guideline treatment. The larger market isn't off-label utilization itself - it's the <em>decision-moment need-state</em>, where the guideline produces no confident answer. Triangulating ACS 2026 incidence (~2.11M new US cases), NCI rare-cancer share (&gt;25%), RCRF's 400K+ framing, and the off-label/off-guideline study, the planning band lands at <strong>600K–1M patients/year, with 700K–900K as the working base case.</strong></p>
+
+<h3>The cohort is bimodal - two halves with opposite survival tails</h3>
+
+<div class="stat-row">
+  <div class="stat"><span class="big">~600K</span><span class="lbl">Annual cohort (base)</span><span class="foot">Conservative anchor; broader rare definition pushes to ~690K</span></div>
+  <div class="stat"><span class="big">~408K</span><span class="lbl">Long-tail rare-histology</span><span class="foot">Median OS ~6.2 yrs · 5yr survival 54%</span></div>
+  <div class="stat"><span class="big">~192K</span><span class="lbl">Short-tail salvage / acute</span><span class="foot">Median OS ~7 mo · 5yr survival ~2%</span></div>
+  <div class="stat"><span class="big">~221K / ~224K</span><span class="lbl">Die within 1 yr / live past 5 yrs</span><span class="foot">Blended 2.2-yr median masks the structure</span></div>
+</div>
+
+<h3 style="margin-top: 24px;">How the 600K cohort is composed</h3>
+<p style="font-size:14.5px;">Annual U.S. oncology decision events flow into the 600K cohort. The diagram below traces the path from total incidence through the histology split, first-entry route, and finally into the bimodal halves we serve.</p>
+
+<div class="sankey-wide"><div class="inner">
+<div class="panel" style="padding: 14px 16px; overflow-x: auto;">
+<svg viewBox="0 0 1560 1110" xmlns="http://www.w3.org/2000/svg" style="width: 100%; min-width: 900px; height: auto; display: block;">
+      <defs>
+        <style>
+          .sk-title { font: 600 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; fill: #1a1a1a; }
+          .sk-cap { font: 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; fill: #5a5a5a; }
+          .sk-head { font: 600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; letter-spacing: 0.08em; text-transform: uppercase; fill: #5a5a5a; }
+          .sk-lbl { font: 700 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; fill: white; letter-spacing: 0.03em; }
+          .sk-num { font: 700 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; fill: white; }
+          .sk-num-sm { font: 700 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; fill: white; }
+          .sk-sub { font: 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; fill: rgba(255,255,255,0.88); }
+          .sk-lbl-dim { font: 700 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; fill: #5a5a5a; letter-spacing: 0.03em; }
+          .sk-num-dim { font: 700 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; fill: #5a5a5a; }
+          .sk-sub-dim { font: 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; fill: #5a5a5a; font-style: italic; }
+          .sk-legend { font: 500 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; fill: #1a1a1a; }
+          .sk-leader { stroke: #5a5a5a; stroke-width: 0.8; fill: none; }
+          .sk-ext { font: 500 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif; fill: #1a1a1a; }
+        </style>
+      </defs>
+
+      <!-- Title -->
+      <text x="650" y="24" text-anchor="middle" class="sk-title">Annual Oncology Decision Events → 600K Cohort → Bimodal Outcome</text>
+      <text x="650" y="44" text-anchor="middle" class="sk-cap">~2.21M decision events flow into the oncology system this year · 2.11M from new dx (Stream A - new patients) + ~102K from progression in prior-year cohorts (Stream B - patients already in the system)</text>
+
+      <!-- Column headers (shifted to y=90, above the top-most node Stream B at y=110) -->
+      <text x="110" y="92" text-anchor="middle" class="sk-head">Annual decision events</text>
+      <text x="470" y="92" text-anchor="middle" class="sk-head">Histology (Stream A only)</text>
+      <text x="830" y="92" text-anchor="middle" class="sk-head">First-entry route</text>
+      <text x="1190" y="92" text-anchor="middle" class="sk-head">Cohort &amp; outcome</text>
+
+      <!-- Combined total bracket on left, spanning both streams -->
+      <line x1="48" y1="110" x2="60" y2="110" stroke="#1a1a1a" stroke-width="1.5"></line>
+      <line x1="60" y1="110" x2="60" y2="1080" stroke="#1a1a1a" stroke-width="1.5"></line>
+      <line x1="60" y1="1080" x2="48" y2="1080" stroke="#1a1a1a" stroke-width="1.5"></line>
+      <g transform="rotate(-90 40 595)">
+        <text x="40" y="595" text-anchor="middle" class="sk-head" style="font-size: 10px;">~2.21M ANNUAL DECISION EVENTS</text>
+      </g>
+
+      <!--
+        NODE GEOMETRY (Stream B stacked above Stream A at left; all Stream A flow shifted by +60px)
+        Scale ≈ 0.43 px/K · plot y = 110 to 1080
+
+        LEFT (col 1) - two streams stacked, combined as ~2.21M total:
+          Stream B (prior-year)  · y=110..154 (44px = 102K)
+          gap                     · y=154..170
+          Stream A (new dx)       · y=170..1080 (910px = 2.11M)
+
+        Col 2 (shifted +60 from prior layout):
+          Rare 408K   · y=170..346
+          gap          · y=346..354
+          Common 1.71M · y=354..1080
+
+        Col 3 (shifted +60):
+          Rare-at-dx · y=170..346
+          gap         · y=346..370
+          Frailty 60K · y=370..396
+          gap         · y=396..399
+          Refractory  · y=399..421
+          gap         · y=421..424
+          Trial-exc   · y=424..441
+          gap         · y=441..444
+          Molecular   · y=444..455
+          gap         · y=455..458
+          Access      · y=458..465
+          gap (sep)   · y=465..500
+          Guideline-clear · y=500..1080 (580px)
+
+        Col 4 (shifted +60):
+          Long-tail  · y=170..346
+          gap         · y=346..352
+          Short-tail · y=352..434 (82px)
+          gap (sep)  · y=434..474
+          Outside    · y=474..1080 (606px)
+      -->
+
+      <!-- ============================ FLOW RIBBONS (drawn under nodes) ============================ -->
+
+      <!-- ## Col 1 (right edge x=140) → Col 2 (left edge x=440), midX = 290 -->
+
+      <!-- Rare: src y=170..346, dst y=170..346 (straight) -->
+      <path d="M 140 170 L 440 170 L 440 346 L 140 346 Z" fill="#8b2c2c" opacity="0.55"></path>
+
+      <!-- Common: src y=346..1080 (Stream A bottom), dst y=354..1080 (col 2 common) -->
+      <path d="M 140 346 C 290 346, 290 354, 440 354 L 440 1080 C 290 1080, 290 1080, 140 1080 Z" fill="#bfb8a8" opacity="0.5"></path>
+
+      <!-- ## Col 2 (right edge x=500) → Col 3 (left edge x=800), midX = 650 -->
+
+      <!-- Rare-at-dx: straight -->
+      <path d="M 500 170 L 800 170 L 800 346 L 500 346 Z" fill="#8b2c2c" opacity="0.55"></path>
+
+      <!-- Combined "new-dx → modeled cluster" ribbon (90K from Stream A's common, lands at BOTTOM 39px of cluster left edge)
+           Source: y=354..393 (39px wide at col 2 common top) · Destination: y=414..453 (39px wide at cluster bottom)
+           Swapped to bottom so Stream B can land at top (avoiding ribbon crossing) -->
+      <path d="M 500 354 C 650 354, 650 414, 800 414 L 800 453 C 650 453, 650 393, 500 393 Z" fill="#3a5a8a" opacity="0.55"></path>
+
+      <!-- Guideline-clear: src y=393..1080 (687px = 1.616M), dst y=500..1080 (580px) - slight taper -->
+      <path d="M 500 393 C 650 393, 650 500, 800 500 L 800 1080 C 650 1080, 650 1080, 500 1080 Z" fill="#bfb8a8" opacity="0.45"></path>
+
+      <!-- ## Col 3 (right edge x=860) → Col 4 (left edge x=1160), midX = 1010 -->
+
+      <!-- Rare-at-dx → Long-tail: straight -->
+      <path d="M 860 170 L 1160 170 L 1160 346 L 860 346 Z" fill="#8b2c2c" opacity="0.55"></path>
+
+      <!-- Examples of rare cancers (inline on the lighter rare-at-dx → long-tail ribbon)
+           Ribbon spans x=860-1160 (300px wide). Columns padded inward with ~10px margin -->
+      <text x="1010" y="194" text-anchor="middle" fill="white" style="font: 600 10px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; letter-spacing: 0.08em; text-transform: uppercase;">Examples - rare cancers (SEER &lt;6/100K)</text>
+
+      <!-- Column 1 - left half, centered at x=945 (range ~875-1015) -->
+      <text x="945" y="222" text-anchor="middle" fill="white" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif;">Sarcoma</text>
+      <text x="945" y="237" text-anchor="middle" fill="#f4e8e8" style="font: 9px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; font-style: italic;">soft tissue · bone · GIST</text>
+      <text x="945" y="262" text-anchor="middle" fill="white" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif;">Cholangiocarcinoma</text>
+      <text x="945" y="284" text-anchor="middle" fill="white" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif;">HCC (liver)</text>
+      <text x="945" y="306" text-anchor="middle" fill="white" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif;">Pancreatic</text>
+      <text x="945" y="328" text-anchor="middle" fill="white" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif;">GBM · glioma</text>
+
+      <!-- Column 2 - right half, centered at x=1075 (range ~1015-1150) -->
+      <text x="1075" y="222" text-anchor="middle" fill="white" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif;">Mesothelioma</text>
+      <text x="1075" y="244" text-anchor="middle" fill="white" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif;">NETs</text>
+      <text x="1075" y="266" text-anchor="middle" fill="white" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif;">EMD Myeloma</text>
+      <text x="1075" y="288" text-anchor="middle" fill="white" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif;">Pediatric</text>
+      <text x="1075" y="310" text-anchor="middle" fill="white" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif;">Head &amp; neck</text>
+      <text x="1075" y="332" text-anchor="middle" fill="#f4e8e8" style="font: 9px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; font-style: italic;">… ~190 more</text>
+
+      <!-- 5 modeled buckets converge into short-tail (y=352..435 in col 4)
+           Stripes: Frailty 352-378 · Refractory 378-400 · Trial-exc 400-417 · Molecular 417-428 · Access 428-435
+           Each ribbon curves UP by ~18px (cluster at y=370+ → short-tail at y=352+) -->
+      <path d="M 860 370 C 1010 370, 1010 352, 1160 352 L 1160 378 C 1010 378, 1010 396, 860 396 Z" fill="#2c4a7a" opacity="0.55"></path>
+      <path d="M 860 396 C 1010 396, 1010 378, 1160 378 L 1160 400 C 1010 400, 1010 418, 860 418 Z" fill="#3a5a8a" opacity="0.55"></path>
+      <path d="M 860 418 C 1010 418, 1010 400, 1160 400 L 1160 417 C 1010 417, 1010 435, 860 435 Z" fill="#486b9d" opacity="0.55"></path>
+      <path d="M 860 435 C 1010 435, 1010 417, 1160 417 L 1160 428 C 1010 428, 1010 446, 860 446 Z" fill="#577cb0" opacity="0.6"></path>
+      <path d="M 860 446 C 1010 446, 1010 428, 1160 428 L 1160 435 C 1010 435, 1010 453, 860 453 Z" fill="#7090c3" opacity="0.6"></path>
+
+      <!-- Inline labels on the 3 wider ribbons (Frailty / Refractory / Trial-excluded)
+           Molecular and Access keep their existing external leader-line labels (ribbons too thin for inline text) -->
+      <text x="1010" y="380" text-anchor="middle" fill="white" style="font: 700 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; letter-spacing: 0.03em;">Frailty</text>
+      <text x="1010" y="403" text-anchor="middle" fill="white" style="font: 700 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; letter-spacing: 0.03em;">Refractory</text>
+      <text x="1010" y="422" text-anchor="middle" fill="white" style="font: 700 10px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; letter-spacing: 0.03em;">Trial-excluded</text>
+
+      <!-- Guideline-clear → Outside-cohort: src y=500..1080, dst y=474..1080 -->
+      <path d="M 860 500 C 1010 500, 1010 474, 1160 474 L 1160 1080 C 1010 1080, 1010 1080, 860 1080 Z" fill="#bfb8a8" opacity="0.45"></path>
+
+      <!-- ============================ STREAM B → MODELED CLUSTER ============================ -->
+      <!-- Stream B (~102K progression events from prior-year cohorts) flows DOWN-RIGHT to land at the TOP 44px of cluster left edge
+           Source: x=140, y=110-154 (44px = 102K) · Destination: x=800, y=370-414 (44px, top of cluster)
+           Stacks above the 39px new-dx ribbon at cluster bottom → no crossing (both ribbons descend monotonically) -->
+      <path d="M 140 110 C 470 110, 470 370, 800 370
+               L 800 414
+               C 470 414, 470 154, 140 154 Z" fill="#b5933d" opacity="0.55"></path>
+
+      <!-- ============================ NODES (drawn on top of ribbons) ============================ -->
+
+      <!-- STREAM B source block at top-left -->
+      <rect x="80" y="110" width="60" height="44" fill="#7a5f1c"></rect>
+      <text x="110" y="129" text-anchor="middle" class="sk-lbl" style="font-size: 11px;">STREAM B</text>
+      <text x="110" y="146" text-anchor="middle" class="sk-num" style="font-size: 14px;">~102K</text>
+
+      <!-- STREAM A source block (shifted down by 60px to y=170..1080) -->
+      <rect x="80" y="170" width="60" height="910" fill="#5a5a5a"></rect>
+      <g transform="rotate(-90 110 625)">
+        <text x="110" y="617" text-anchor="middle" class="sk-lbl">STREAM A - NEW U.S. CANCER DX</text>
+        <text x="110" y="642" text-anchor="middle" class="sk-num">2,114,850 / yr</text>
+        <text x="110" y="660" text-anchor="middle" class="sk-sub">ACS 2026 projection</text>
+      </g>
+
+      <!-- Column 2: Rare histology (shifted to y=170..346) -->
+      <rect x="440" y="170" width="60" height="176" fill="#8b2c2c"></rect>
+      <text x="470" y="232" text-anchor="middle" class="sk-lbl">RARE</text>
+      <text x="470" y="250" text-anchor="middle" class="sk-lbl">HISTOLOGY</text>
+      <text x="470" y="280" text-anchor="middle" class="sk-num">408K</text>
+      <text x="470" y="298" text-anchor="middle" class="sk-sub">~20% · SEER &lt;6/100K</text>
+      <text x="470" y="314" text-anchor="middle" class="sk-sub" style="font-style: italic;">all enter cohort</text>
+
+      <!-- Column 2: Common histology (shifted to y=354..1080) -->
+      <rect x="440" y="354" width="60" height="726" fill="#f1ede3" stroke="#d8d4cb"></rect>
+      <g transform="rotate(-90 470 717)">
+        <text x="470" y="709" text-anchor="middle" class="sk-lbl-dim">COMMON HISTOLOGY</text>
+        <text x="470" y="734" text-anchor="middle" class="sk-num-dim">1,706,468</text>
+        <text x="470" y="752" text-anchor="middle" class="sk-sub-dim">~80% · most exit to standard care</text>
+      </g>
+
+      <!-- Column 3: Rare-at-dx (shifted to y=170..346) -->
+      <rect x="800" y="170" width="60" height="176" fill="#8b2c2c"></rect>
+      <text x="830" y="232" text-anchor="middle" class="sk-lbl">RARE</text>
+      <text x="830" y="250" text-anchor="middle" class="sk-lbl">AT DX</text>
+      <text x="830" y="280" text-anchor="middle" class="sk-num">408K</text>
+      <text x="830" y="298" text-anchor="middle" class="sk-sub">Firm anchor</text>
+      <text x="830" y="314" text-anchor="middle" class="sk-sub" style="font-style: italic;">in cohort</text>
+
+      <!-- Column 3: 5 modeled sub-buckets, contiguous (no internal gaps so cluster height = 83px matches 44+39 input) -->
+      <rect x="800" y="370" width="60" height="26" fill="#2c4a7a"></rect>
+      <text x="830" y="388" text-anchor="middle" class="sk-num-sm">60K</text>
+
+      <rect x="800" y="396" width="60" height="22" fill="#3a5a8a"></rect>
+      <text x="830" y="412" text-anchor="middle" class="sk-num-sm">52K</text>
+
+      <rect x="800" y="418" width="60" height="17" fill="#486b9d"></rect>
+      <text x="830" y="431" text-anchor="middle" class="sk-num-sm" style="font-size: 11px;">40K</text>
+
+      <rect x="800" y="435" width="60" height="11" fill="#577cb0"></rect>
+      <line x1="860" y1="440" x2="900" y2="440" class="sk-leader"></line>
+      <line x1="900" y1="440" x2="935" y2="440" class="sk-leader"></line>
+      <text x="940" y="443" class="sk-ext">25K · Molecular</text>
+
+      <rect x="800" y="446" width="60" height="7" fill="#7090c3"></rect>
+      <line x1="860" y1="450" x2="900" y2="450" class="sk-leader"></line>
+      <line x1="900" y1="450" x2="935" y2="462" class="sk-leader"></line>
+      <text x="940" y="465" class="sk-ext">15K · Access</text>
+
+      <!-- Column 3: Guideline-clear (shifted +60) -->
+      <rect x="800" y="500" width="60" height="580" fill="#f1ede3" stroke="#d8d4cb"></rect>
+      <g transform="rotate(-90 830 790)">
+        <text x="830" y="782" text-anchor="middle" class="sk-lbl-dim">GUIDELINE-CLEAR PATH</text>
+        <text x="830" y="807" text-anchor="middle" class="sk-num-dim">~1,514,000</text>
+        <text x="830" y="825" text-anchor="middle" class="sk-sub-dim">standard line-of-therapy care</text>
+      </g>
+
+      <!-- Column 4: Long-tail half (widened to 130px so labels fit horizontally) -->
+      <rect x="1160" y="170" width="130" height="176" fill="#8b2c2c"></rect>
+      <text x="1225" y="228" text-anchor="middle" class="sk-lbl">LONG-TAIL HALF</text>
+      <text x="1225" y="266" text-anchor="middle" class="sk-num">408K</text>
+      <text x="1225" y="290" text-anchor="middle" class="sk-sub">5yr 54% · median 6.2 yr</text>
+      <text x="1225" y="308" text-anchor="middle" class="sk-sub" style="font-style: italic;">Sarcoma fits here</text>
+
+      <!-- Column 4: Short-tail half (widened to 130px) -->
+      <rect x="1160" y="352" width="130" height="83" fill="#2c4a7a"></rect>
+      <text x="1225" y="374" text-anchor="middle" class="sk-lbl">SHORT-TAIL HALF</text>
+      <text x="1225" y="396" text-anchor="middle" class="sk-num" style="font-size: 16px;">192K</text>
+      <text x="1225" y="412" text-anchor="middle" class="sk-sub">5yr 2% · median ~7 mo</text>
+      <text x="1225" y="428" text-anchor="middle" class="sk-sub" style="font-style: italic;">Rec. ovarian fits here</text>
+
+      <!-- Column 4: Outside cohort (widened to 130px) -->
+      <rect x="1160" y="474" width="130" height="606" fill="#f1ede3" stroke="#d8d4cb"></rect>
+      <g transform="rotate(-90 1225 777)">
+        <text x="1225" y="769" text-anchor="middle" class="sk-lbl-dim">OUTSIDE COHORT</text>
+        <text x="1225" y="794" text-anchor="middle" class="sk-num-dim">~1,514,000</text>
+        <text x="1225" y="812" text-anchor="middle" class="sk-sub-dim">standard guideline care</text>
+      </g>
+
+      <!-- ============================ COHORT BRACKET (col 4) ============================ -->
+      <!-- Moved right (x=1302..1315) to accommodate widened col 4 (right edge now at x=1290) -->
+      <line x1="1302" y1="170" x2="1315" y2="170" stroke="#1a1a1a" stroke-width="1.5"></line>
+      <line x1="1315" y1="170" x2="1315" y2="434" stroke="#1a1a1a" stroke-width="1.5"></line>
+      <line x1="1315" y1="434" x2="1302" y2="434" stroke="#1a1a1a" stroke-width="1.5"></line>
+      <g transform="rotate(90 1335 302)">
+        <text x="1335" y="306" text-anchor="middle" class="sk-head">600K cohort</text>
+      </g>
+
+      <!-- ============================ POST-YEAR-1 OUTCOMES of OUTSIDE COHORT ============================ -->
+      <!-- 4 blocks to the right of the 1.514M outside-cohort block, sized proportionally to year-1 outcome shares
+           Outside cohort spans y=474..1080 (606px = 1,514K @ 0.4 px/K).
+           Curative ~50% = 303px · Sustained tx ~22% = 133px · Surveillance ~10% = 61px · Rapid EOL ~18% = 109px -->
+
+      <!-- Section header -->
+      <text x="1450" y="462" text-anchor="middle" class="sk-head" style="font-size: 11px;">After year 1 - outcomes of the 1.514M outside cohort</text>
+
+      <!-- Tiny connector dots from outside cohort to outcome blocks -->
+      <line x1="1290" y1="500" x2="1360" y2="500" stroke="#d8d4cb" stroke-width="1" stroke-dasharray="3,3"></line>
+      <line x1="1290" y1="850" x2="1360" y2="850" stroke="#d8d4cb" stroke-width="1" stroke-dasharray="3,3"></line>
+
+      <!-- Block 1: Curative completion (~50%, 303px) -->
+      <rect x="1360" y="474" width="180" height="303" fill="#e6f0e8" stroke="#2c6e3a" stroke-width="1.5"></rect>
+      <text x="1450" y="500" text-anchor="middle" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #2c6e3a; letter-spacing: 0.06em; text-transform: uppercase;">Curative completion</text>
+      <text x="1450" y="538" text-anchor="middle" style="font: 700 28px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #2c6e3a;">~50%</text>
+      <text x="1450" y="560" text-anchor="middle" style="font: 700 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #1a1a1a;">~760K</text>
+      <text x="1450" y="595" text-anchor="middle" style="font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #1a1a1a;">Early-stage cancers finishing</text>
+      <text x="1450" y="611" text-anchor="middle" style="font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #1a1a1a;">curative surgery ± adjuvant:</text>
+      <text x="1450" y="635" text-anchor="middle" style="font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #5a5a5a;">early breast · prostate · colon</text>
+      <text x="1450" y="651" text-anchor="middle" style="font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #5a5a5a;">lung · localized melanoma</text>
+      <text x="1450" y="688" text-anchor="middle" style="font: italic 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #5a5a5a;">Most are cured. Small subset</text>
+      <text x="1450" y="704" text-anchor="middle" style="font: italic 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #5a5a5a;">recurs in years 1–15 and may</text>
+      <text x="1450" y="720" text-anchor="middle" style="font: italic 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #5a5a5a;">feed future Stream B.</text>
+
+      <!-- Block 2: Sustained guideline-clear tx (~22%, 133px) -->
+      <rect x="1360" y="777" width="180" height="133" fill="#e3ebf5" stroke="#2c4a7a" stroke-width="1.5"></rect>
+      <text x="1450" y="802" text-anchor="middle" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #2c4a7a; letter-spacing: 0.06em; text-transform: uppercase;">Sustained guideline tx</text>
+      <text x="1450" y="836" text-anchor="middle" style="font: 700 22px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #2c4a7a;">~22%</text>
+      <text x="1450" y="854" text-anchor="middle" style="font: 700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #1a1a1a;">~335K</text>
+      <text x="1450" y="879" text-anchor="middle" style="font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #5a5a5a;">Metastatic with clear 1L–3L:</text>
+      <text x="1450" y="895" text-anchor="middle" style="font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #5a5a5a;">HER2+, EGFR+, BRAF+, etc.</text>
+
+      <!-- Block 3: Active surveillance (~10%, 61px) -->
+      <rect x="1360" y="910" width="180" height="61" fill="#f5ecd4" stroke="#8a6a1a" stroke-width="1.5"></rect>
+      <text x="1450" y="932" text-anchor="middle" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #8a6a1a; letter-spacing: 0.06em; text-transform: uppercase;">Active surveillance</text>
+      <text x="1450" y="954" text-anchor="middle" style="font: 700 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #8a6a1a;">~10% · ~150K</text>
+      <text x="1450" y="968" text-anchor="middle" style="font: 10px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #5a5a5a;">low-risk prostate · CLL · indolent</text>
+
+      <!-- Block 4: Rapid progression / EOL (~18%, 109px) -->
+      <rect x="1360" y="971" width="180" height="109" fill="#f4e8e8" stroke="#8b2c2c" stroke-width="1.5"></rect>
+      <text x="1450" y="994" text-anchor="middle" style="font: 600 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #8b2c2c; letter-spacing: 0.06em; text-transform: uppercase;">Rapid progression / EOL</text>
+      <text x="1450" y="1020" text-anchor="middle" style="font: 700 20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #8b2c2c;">~18%</text>
+      <text x="1450" y="1038" text-anchor="middle" style="font: 700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #1a1a1a;">~270K</text>
+      <text x="1450" y="1058" text-anchor="middle" style="font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #5a5a5a;">Late-stage rapid progressors:</text>
+      <text x="1450" y="1074" text-anchor="middle" style="font: 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; fill: #5a5a5a;">die within months · standard care</text>
+
+</svg>
+
+<div class="sankey-legend">
+  <div class="sankey-streams">
+    <div class="stream-item"><strong>Stream A - new dx (~2.11M/yr):</strong> first U.S. cancer diagnoses this year flowing through the histology split.</div>
+    <div class="stream-item"><strong>Stream B - progression (~102K/yr):</strong> patients diagnosed in prior years whose initially guideline-clear path now moves out. Integral over all prior cohorts (years 1–5 dominate; tail ~15 yr) - not new dx.</div>
+    <div class="stream-item"><strong>Modeled cluster (192K):</strong> ~102K from Stream B (top) + ~90K from Stream A's common histology (bottom) merge into the five short-tail buckets.</div>
+  </div>
+
+  <h5 class="sankey-legend-title">Legend</h5>
+  <div class="sankey-legend-items">
+    <span class="sl-item"><span class="sl-sw" style="background:#7a5f1c"></span><strong>Stream B</strong>&nbsp;· ~102K prior-yr cohort</span>
+    <span class="sl-item"><span class="sl-sw" style="background:#8b2c2c"></span><strong>Rare / long-tail</strong>&nbsp;· 408K</span>
+    <span class="sl-item"><span class="sl-sw" style="background:#2c4a7a"></span><strong>Frailty</strong>&nbsp;· 60K</span>
+    <span class="sl-item"><span class="sl-sw" style="background:#3a5a8a"></span><strong>Refractory</strong>&nbsp;· 52K</span>
+    <span class="sl-item"><span class="sl-sw" style="background:#486b9d"></span><strong>Trial-excluded</strong>&nbsp;· 40K</span>
+    <span class="sl-item"><span class="sl-sw" style="background:#577cb0"></span><strong>Molecular</strong>&nbsp;· 25K</span>
+    <span class="sl-item"><span class="sl-sw" style="background:#7090c3"></span><strong>Access failure</strong>&nbsp;· 15K</span>
+    <span class="sl-item"><span class="sl-sw" style="background:#bfb8a8"></span><strong>Outside cohort</strong>&nbsp;· guideline-clear standard care · ~1.51M</span>
+  </div>
+</div>
+</div>
+<div class="footnote"><br></div>
+</div></div>
+
+<p>The 600K is a <em>decision-moment</em> population, not an off-label utilization count. Many in the 600K still take a guideline-listed drug - just a weak category 2A/2B option, or one of several "equivalent" choices the guideline can't disambiguate. Our product serves the larger decision-moment population, not just the off-label tail.</p>
+
+<table>
+  <thead>
+    <tr><th>Half</th><th>What's in it</th><th>Survival shape</th><th>What they need from us</th><th>Service intensity</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Long-tail rare-histology (~408K)</strong></td>
+      <td>SEER/RARECARE rare cancers (&lt;6 per 100K) - sarcoma sits here. Anchored empirically: 20% × ACS incident.</td>
+      <td>Median OS ~6.2 yrs; 5yr survival 54%</td>
+      <td>Sustained decision support across many episodes; broad upfront molecular + functional baseline; recurring monitoring</td>
+      <td>Multi-year relationship; lower per-episode urgency; high LTV through the monitoring subscription</td>
+    </tr>
+    <tr>
+      <td><strong>Short-tail salvage / acute (~192K)</strong></td>
+      <td>~60K frailty + ~40K trial-excluded + ~25K unusual molecular + ~15K access failure + ~52K refractory/late-line. Recurrent ovarian sits here.</td>
+      <td>Median OS ~7 mo; 5yr survival ~2%</td>
+      <td>High-urgency single decision moment; deep workup + ranked options + access execution in weeks not months</td>
+      <td>Episode-priced; compressed timeline; the urgency proves price point</td>
+    </tr>
+  </tbody>
+</table>
+<div class="footnote"><br></div>
+
+<div class="panel callout">
+<p style="margin-top:0;"><strong>Why the bimodal framing matters for the operating plan.</strong> The two halves of the cohort have genuinely different clinical needs that the <em>same</em> scientific stack serves at different service intensities. Serving only one half leaves the other unaddressed.</p>
+
+<p>The <strong>long-tail half</strong> (sarcoma fits here) is a multi-year journey with many decision moments - initial workup, line changes at progression, recurrence, surgical re-resection moments. The clinic stays with the patient over years. The commercial vehicle is the decision episode plus the monitoring subscription; the relationship compounds.</p>
+
+<p>The <strong>short-tail half</strong> (recurrent ovarian fits here) is a single high-urgency decision moment in a compressed window. Weeks, not months. The clinic delivers workup + ranked options + drug-access execution in that window. The commercial vehicle is the decision episode itself.</p>
+
+<p style="margin-bottom:0;">Serving only the long-tail leaves the high-urgency, ambiguity-at-recurrence cohort with no place to go. Serving only the short-tail leaves multi-year patients without sustained decision support. Doing both reaches the full bimodal cohort from day one and structurally avoids the "wrong product for wrong patient" failure mode. The launch-indication choice (sarcoma + recurrent ovarian) is therefore a deliberate portfolio move spanning both halves - same molecular + functional + immune stack, different service intensities and commercial cadences.</p>
+</div>
+
+<h3>Customer reframe - what changes from status quo</h3>
+<table>
+  <thead><tr><th>Dimension</th><th>Built for clinicians (status quo)</th><th>Built for patients (our clinic)</th></tr></thead>
+  <tbody>
+    <tr><td>Workup depth</td><td>Limited gene panels; no RNA; ~5–10 protein markers</td><td>Indication-specific menu - broad DNA/RNA with fusion capability; functional on live tissue where feasible; cell-surface scan available in the bespoke add-on</td></tr>
+    <tr><td>Deliverable</td><td>Static PDFs reported to ordering MD</td><td>Tumor-board input + portable longitudinal dashboard the patient owns; FHIR/USCDI-compliant from day 1</td></tr>
+    <tr><td>Findings reported</td><td>Only flagged within indication-relevant findings (~20–30% of measured targets)</td><td>All potentially actionable findings; structured pre-read with ranked options, evidence level, access route, monitoring plan</td></tr>
+    <tr><td>Relationship</td><td>Single quick scan by oncologist; episode-bound</td><td>Decision episode + monitoring subscription; portable across treating sites</td></tr>
+    <tr><td>Pricing</td><td>Insurance-mediated, opaque, per-CPT</td><td>Transparent three-component model: core decision episode + monitoring subscription + capacity-limited bespoke add-on (price points deferred - see §13); Insurance where applicable</td></tr>
+    <tr><td>Patient role</td><td>Subject of testing</td><td>Co-pilot - owns their data and the decision rationale</td></tr>
+  </tbody>
+</table>
+<div class="footnote"><br></div>
+</section>
+
+<!-- ============================ 4. PRODUCT ============================ -->
+<section id="product">
+<h2><span class="num">4.</span> Product structure</h2>
+
+<p>The core product is a <strong>decision episode</strong>. Monitoring is a separate subscription. A capacity-limited bespoke tier exists but is explicitly not the default. The science stack is held constant for everyone; service intensity is the variable. Specific price points are deferred - see §13 for the pricing-policy framework.</p>
+
+<h3>Three SKUs, one science stack</h3>
+<div class="grid-3">
+  <div class="card">
+    <h4>Core decision episode</h4>
+    <p style="font-size:14px;"><strong>The product.</strong> Indication-specific molecular + functional workup, integrated decision report, tumor-board input, drug-access plan, 30-day post-decision support window.</p>
+    <p style="font-size:14px;"><strong>What's in.</strong> Indication-appropriate broad DNA/RNA (ovarian: germline + somatic + HRD; sarcoma: fusion-aware); Travera functional (RTS for tumor; NOVA where ICI-relevant); standard pathology; tumor-board pre-read; access plan.</p>
+    <p style="font-size:14px;"><strong>What's out.</strong> Single-cell scRNA at scale (bespoke only); whole-genome (bespoke only); travel coordination; founder-style hand-holding; international logistics.</p>
+  </div>
+  <div class="card">
+    <h4>Monitoring subscription</h4>
+    <p style="font-size:14px;"><strong>The product.</strong> Longitudinal serial monitoring with cohort-specific cadence; re-testing triggers; portable dashboard; tumor-board re-convene on new signal.</p>
+    <p style="font-size:14px;"><strong>What's in.</strong> Per-cohort cadence (e.g., metastatic solid on tx: blood q4–6wk + imaging q8–12wk); MRD vendor-routed (Signatera / Personalis NeXT / Guardant Reveal by cohort); ctDNA; AE tracking via patient app; re-tumor-board on rising signal.</p>
+    <p style="font-size:14px;"><strong>Why a subscription.</strong> Episodic billing fragments the patient relationship; subscription aligns incentives with the patient over time.</p>
+  </div>
+  <div class="card tinted">
+    <h4>Bespoke add-ons</h4>
+    <p style="font-size:14px;"><strong>The product.</strong> Additional human time, deeper omics, travel/logistics, extended monitoring - for patients whose situation justifies it and whose payment supports the marginal cost.</p>
+    <p style="font-size:14px;"><strong>What's in.</strong> Extra translational-scientist time; single-cell + 100+ multiplex protein where useful; deeper logistics.</p>
+    <p style="font-size:14px;"><strong>What's <em>not</em> in.</strong>&nbsp;Premium dollars buy&nbsp; deeper service, but don't get to buy a "better" decision.</p>
+  </div>
+</div>
+
+<div class="panel decision">
+<strong>The "whale tension":</strong>&nbsp;Richer patients can subsidize the platform only if they're NOT receiving a fundamentally different clinical-science stack. But the tension exists because add-ons can buy more workup (eg., use more vendors) or quicker time to therapy. We need to make sure we aren't optimizing for the wrong product.<br></div>
+
+<h3>Pricing specifics deferred</h3>
+<div class="question"><span class="lbl">Open</span>Final cash-price for the core episode is deferred. Decision will be made closer to launch, gated on first-10-case learnings and a comparable-pricing analysis. See §13 for the policy framework that constrains it.</div>
+
+<h3>Reimbursement is a partial offset, not the underwriting assumption</h3>
+<p>CMS national NGS coverage is limited to specific criteria (FDA-cleared NGS in advanced/recurrent/metastatic disease, CLIA lab, ordered by the treating physician); RNA-sequencing / protein analysis is often left to MAC or payer discretion. Some MRD products now have defined Medicare coverage. In practice, reimbursement offsets part of the molecular layer - not most of a concierge decision episode. We model reimbursement as a <b>partial offset</b> that grows as our NGS partnerships (eg., Variantyx) matures, not as a foundation for the core price.</p>
+</section>
+
+<!-- ============================ 5. INDICATIONS ============================ -->
+<section id="indications">
+<h2><span class="num">5.</span> Launch indications</h2>
+
+<div class="panel decision">
+<strong>Potential launch wedge: recurrent ovarian + rare cancer.</strong> Peritoneal/appendiceal is a conditional third only if tissue logistics + disease-specific champions are already in place.</div>
+
+<h3>Example indication mapping</h3>
+<div class="grid-2">
+  <div class="card">
+    <h4>Recurrent ovarian → short-tail / salvage half</h4>
+    <p style="font-size:14px;"><strong>Why it fits.</strong> Post-platinum recurrent disease is biomarker-ambiguous and high-urgency. Broad germline + somatic testing is already guideline-linked. HRD status matters clinically. Tissue is often obtainable at recurrence or secondary cytoreduction. Patients face treatment ambiguity beyond standard markers (BRCA+/HRD− vs. HRD+/BRCA− vs. HRP carry different evidence weights for PARP inhibitor, bevacizumab, retreatment platinum, ADC, immunotherapy).</p>
+    <p style="font-size:14px;"><strong>What we sell.</strong> Episode-priced decision support at the recurrence decision moment. Functional response data ordering 5–6 candidate regimens. Drug-access execution on the chosen path. Short-window deliverable.</p>
+    <p style="font-size:14px;"><strong>Stealth product wedge.</strong> Secondary cytoreduction decisions (cut/no-cut) are themselves decision moments where our data could inform - a possible higher-per-decision-value mode beyond drug selection.</p>
+  </div>
+  <div class="card">
+    <h4>Sarcoma → long-tail rare-histology half</h4>
+    <p style="font-size:14px;"><strong>Why it fits.</strong> Heterogeneous, often molecularly complex, depends on expert pathology and fusion-aware molecular workup. Recurrent fusions are central to subtype classification + treatment logic. Multi-year relationship - sarcoma patients face many decision moments over the course of disease, each one a re-decision episode plus monitoring.</p>
+    <p style="font-size:14px;"><strong>What we sell.</strong> The full long-tail value proposition - initial baseline episode, then ongoing monitoring, then re-decision episodes at progressions. Patients are with us for years; LTV scales with monitoring subscription.</p>
+    <p style="font-size:14px;"><strong>Why not a single-tissue functional-only sell.</strong> Sarcoma requires expert pathology + broad DNA/RNA with strong fusion capability up front. Functional is additive where fresh tissue is feasible; not a substitute for the molecular stack.</p>
+  </div>
+</div>
+
+<h3>Indication-specific test menus (still needs real finalization during tranche 1)</h3>
+<table>
+  <thead><tr><th>Indication</th><th>Primary tests</th><th>Secondary tests</th><th>Functional</th><th>MRD vendor</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Recurrent ovarian</strong></td>
+      <td>Broad tissue genomics (germline + somatic per ASCO universal-germline + targeted somatic); HRD status</td>
+      <td>RNA-seq (fusion-aware); methylation classifier where ambiguous</td>
+      <td>Travera RTS on live tissue when feasible at secondary cytoreduction; NOVA where ICI relevance</td>
+      <td>Signatera vs. Personalis NeXT Personal Dx - tumor-informed favored where tissue available</td>
+      <td>HRD+/BRCA− is the molecular ambiguity where PARPi guidance is weakest - primary value moment</td>
+    </tr>
+    <tr>
+      <td><strong>Sarcoma</strong></td>
+      <td>Expert pathology + broad DNA/RNA with strong fusion capability</td>
+      <td>Methylation classifier (DKFZ) for unclassified specimens; targeted protein</td>
+      <td>Travera functional on live tissue where feasible; cfDNA limited (LMS sheds poorly)</td>
+      <td>Personalis NeXT Personal Dx (tumor-informed) preferred; Guardant Reveal as tissue-free fallback</td>
+      <td>Fusion-aware RNA is non-negotiable.</td>
+    </tr>
+  </tbody>
+</table>
+<div class="footnote"><br></div>
+
+<div class="flag"><span class="lbl">Flag</span>Storage of tissue for future testing works for molecular but <strong>not</strong> for functional - frozen tissue can't be functionally tested on Travera. This constrains "go back and try again" workflows and makes the AMC tissue triage SOP load-bearing.</div>
+</section>
+
+<!-- ============================ 6. PATIENT JOURNEY ============================ -->
+<section id="journey">
+<h2><span class="num">6.</span> Patient journey - 6 modules</h2>
+
+<p>The clinic operates as 6 sequential modules that loop on progression. Each module has a service, a stack, a billing surface, and operational unknowns that we resolve in the seed window.</p>
+
+<div class="journey-diagram" aria-label="Patient journey: six sequential modules looping on progression" style="margin: 18px 0 22px; padding: 8px 4px;">
+<svg viewBox="0 -18 880 193" xmlns="http://www.w3.org/2000/svg" role="img" style="width:100%; height:auto; display:block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;">
+  <defs>
+    <marker id="jd-arrow" markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,5 L6.5,2.5 z" fill="#9ba6b8"></path>
+    </marker>
+    <marker id="jd-arrow-loop" markerWidth="7" markerHeight="7" refX="6" refY="2.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,5 L6.5,2.5 z" fill="#0d8a8a"></path>
+    </marker>
+  </defs>
+
+  <!-- linear connectors at y=80 -->
+  <line x1="100" y1="80" x2="197" y2="80" stroke="#cdd4df" stroke-width="1.5" marker-end="url(#jd-arrow)"></line>
+  <line x1="245" y1="80" x2="343" y2="80" stroke="#cdd4df" stroke-width="1.5" marker-end="url(#jd-arrow)"></line>
+  <line x1="391" y1="80" x2="489" y2="80" stroke="#cdd4df" stroke-width="1.5" marker-end="url(#jd-arrow)"></line>
+  <line x1="537" y1="80" x2="635" y2="80" stroke="#cdd4df" stroke-width="1.5" marker-end="url(#jd-arrow)"></line>
+  <line x1="683" y1="80" x2="781" y2="80" stroke="#cdd4df" stroke-width="1.5" marker-end="url(#jd-arrow)"></line>
+
+  <!-- loop: orthogonal 90-degree path from module 6 (top) up, across, and down into module 2 (top).
+       Lives entirely above the modules so it never crosses any text. -->
+  <path d="M 805 58 L 805 22 L 221 22 L 221 58" fill="none" stroke="#0d8a8a" stroke-width="1.25" stroke-opacity="0.7" stroke-linejoin="miter" marker-end="url(#jd-arrow-loop)"></path>
+  <!-- label sits above the horizontal segment, off the arrow path -->
+  <text x="513" y="10" text-anchor="middle" fill="#0d8a8a" font-size="11" letter-spacing="0.02em">on progression</text>
+
+  <!-- module 1 -->
+  <circle cx="76" cy="80" r="22" fill="#0e1726"></circle>
+  <text x="76" y="85" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">1</text>
+  <text x="76" y="128" text-anchor="middle" fill="#0e1726" font-size="13" font-weight="600">Intake</text>
+  <text x="76" y="144" text-anchor="middle" fill="#5d6b80" font-size="11">coordination</text>
+
+  <!-- module 2 -->
+  <circle cx="221" cy="80" r="22" fill="#0e1726"></circle>
+  <text x="221" y="85" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">2</text>
+  <text x="221" y="128" text-anchor="middle" fill="#0e1726" font-size="13" font-weight="600">Testing</text>
+  <text x="221" y="144" text-anchor="middle" fill="#5d6b80" font-size="11">molecular + functional</text>
+
+  <!-- module 3 -->
+  <circle cx="367" cy="80" r="22" fill="#0e1726"></circle>
+  <text x="367" y="85" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">3</text>
+  <text x="367" y="128" text-anchor="middle" fill="#0e1726" font-size="13" font-weight="600">Assessment</text>
+  <text x="367" y="144" text-anchor="middle" fill="#5d6b80" font-size="11">ranked options</text>
+
+  <!-- module 4 -->
+  <circle cx="513" cy="80" r="22" fill="#0e1726"></circle>
+  <text x="513" y="85" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">4</text>
+  <text x="513" y="128" text-anchor="middle" fill="#0e1726" font-size="13" font-weight="600">Access</text>
+  <text x="513" y="144" text-anchor="middle" fill="#5d6b80" font-size="11">drug + treatment plan</text>
+
+  <!-- module 5 -->
+  <circle cx="659" cy="80" r="22" fill="#0e1726"></circle>
+  <text x="659" y="85" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">5</text>
+  <text x="659" y="128" text-anchor="middle" fill="#0e1726" font-size="13" font-weight="600">Monitoring</text>
+  <text x="659" y="144" text-anchor="middle" fill="#5d6b80" font-size="11">burden + immune</text>
+
+  <!-- module 6 -->
+  <circle cx="805" cy="80" r="22" fill="#0e1726"></circle>
+  <text x="805" y="85" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">6</text>
+  <text x="805" y="128" text-anchor="middle" fill="#0e1726" font-size="13" font-weight="600">Iterate</text>
+  <text x="805" y="144" text-anchor="middle" fill="#5d6b80" font-size="11">repeat / next decision</text>
+</svg>
+</div>
+
+<div class="module">
+<div class="module-head"><div class="module-num">1</div><h3>Intake / coordination</h3></div>
+<p><strong>What happens.</strong> Two intake paths: <em>(a) new / first-touch</em> - capture the patient at the earliest diagnostic biopsy. Most valuable channel; data substrate starts here. We need to be the reflex test or partnered with the diagnostic flow at the AMC. <em>(b) Established / late-line</em> - retrieve banked tissue + FastQ files from past sequencing vendors. Patient has legal right to request. RCRF has this muscle.</p>
+<p><strong>Operational requirement.</strong> AMC handoff is a pre-agreed tissue triage pathway, not a post hoc ask. Seven embedded relationships per AMC: treating oncologist, IR or surgeon, pathology director + pathologist assistant, research coordinator, biobank/specimen manager, courier/logistics lead, molecular-core or send-out interface. <em>If we don't have named people in each node at each AMC, the tissue pipeline isn't real.</em> Confidence: high.</p>
+
+</div>
+
+<div class="module">
+<div class="module-head"><div class="module-num">2</div><h3>Testing</h3></div>
+<p><strong>Sub-components.</strong> Sample acquisition (often multiple time points: diagnostic biopsy, resection, repeat biopsy, blood) and testing menu (molecular: panel/WES/WGS/RNA-seq/single-cell; functional: Travera on live tissue, 24h window; blood-based: ctDNA, MRD, immune function, methylation).</p>
+<p><strong>Operational note.</strong> Functional and molecular can't run on the same tissue at the same time-point. Molecular comes first to inform the drug list for functional testing, which requires live tissue within ~24 hours, so the drug panel has to be pre-selected before the resection biopsy lands. The decisive distinction for AMC cores is CLIA, not IRB: PI + IRB supports research, but a non-CLIA research core can't return clinical results, so AMC cores are usable directly only when running in CLIA-certified clinical mode for that assay and return path. On the cell-free question, the robust architecture is split-biopsy / split-specimen plus matched blood plasma, not "cell-free from the same biopsy" as the primary genomics substrate. <em>Confidence: high on sequencing-then-functional ordering and the CLIA distinction, medium on the split-specimen architecture.</em></p>
+</div>
+
+<div class="module">
+<div class="module-head"><div class="module-num">3</div><h3>Assessment</h3></div>
+<p><strong>What happens.</strong> Multi-source data becomes a prioritized action list. Not a single point in time - integrated across diagnosis, resection, and follow-up. The deliverable is a tumor-board input, not a competing report.</p>
+<p><strong>Operational note.</strong> Build the clinical core in-house, buy commodity components, and keep v1 human-supervised and tumor-board-native. Stage-one flow: clinical intake → molecular evidence retrieval → hypothesis generation → functional test selection → ranked therapy list → human tumor-board review → patient-facing report and access plan. Position the deliverable as a tumor-board INPUT, not a competitor: a structured pre-read covering clinical question, sample provenance, ranked options, evidence level, access route, and monitoring plan, with local or shared MTB adjudicating. That framing lowers physician defensiveness and makes the product additive. <em>Confidence: high on architecture and positioning, medium on team shape.</em></p>
+<p><strong>The rare-vs.-known split.</strong> Rare-cancer / post-guideline patients: oncologists actually want our data (no NCCN block to fall back on). Known-cancer early-line: monitoring value + within-guideline prioritization (e.g., FOLFOX vs. FOLFIRI); receptivity is lower unless we make it easy.</p>
+</div>
+
+<div class="module">
+<div class="module-head"><div class="module-num">4</div><h3>Access &amp; treatment planning</h3></div>
+<p><strong>What happens.</strong> Translate ranked options into actual drug access via the 4-lane architecture (see §10). The hardest module operationally: oncologists push back when our report shows 5 strong responders that aren't covered - it becomes <em>their</em> job to explain to the patient why they can't have it. We own that explanation and the access execution.</p>
+<p><strong>Operational note.</strong> Drug access is a hybrid function. Internalize the high-judgment work (sponsor outreach, medical-necessity narratives, single-patient IND logic, payer appeal strategy, patient communication) and outsource the back-office (routine benefit verification, specialty-pharmacy routing, routine prior-auth, international logistics). Team shape for the first tens of cases: one senior access lead plus 2–3 access specialists. Bespoke manufacturing is a later question, not a launch question; if engaged at launch at all, only through selected partners for protocolized pilots, never as a core service promise. The launch thesis is the decision layer, and shouldn't be buried under manufacturing complexity. <em>Confidence: high on the hybrid structure, medium on headcount, medium-low on the manufacturing call.</em></p>
+</div>
+
+<div class="module">
+<div class="module-head"><div class="module-num">5</div><h3>Monitoring</h3></div>
+<p><strong>What happens.</strong> Tumor burden (ctDNA / MRD, methylation / tissue-of-origin, imaging at standard cadence) + immune function (Travera ICI-related changes, AE surveillance, chemo recovery tracking). Vanderbilt histotripsy study is the live proof point - monthly blood collections paired with immune function + ctDNA.</p>
+<p><strong>Operational note.</strong> Proscia is not MRD (it's digital pathology). The real MRD shortlist is Signatera (Natera; personalized tumor-informed ctDNA), Personalis NeXT Personal Dx (ultra-sensitive tumor-informed), Guardant Reveal (tissue-free, when tissue-free is strategically important), and clonoSEQ (Adaptive; only FDA-cleared for MM/CLL/ALL), with Foresight and Veracyte as emerging options. There's no single "right" monitoring cadence; defaults need to be cohort-specific, tied to disease biology and treatment landmarks. Practical launch cadence: metastatic solid on active tx → blood q4–6wk + imaging q8–12wk; post-definitive high-risk → ctDNA/MRD q8–12wk for 2yrs then less; myeloma/heme → defined response landmarks then q3–6mo in maintenance. <em>Confidence: high on the MRD shortlist excluding Proscia, medium-low on the final pick and cadence specifics.</em></p>
+</div>
+
+<div class="module">
+<div class="module-head"><div class="module-num">6</div><h3>Repeat / iterate</h3></div>
+<p><strong>What happens.</strong> The loop. When monitoring flags progression, we already have the substrate to act on the next decision rapidly. The benchmark framing: at any progression, a fully-resourced patient has ~20 things ready to try, escalated by seriousness. Our job is to generate that ranked list automatically from the patient's substrate.</p>
+<p><strong>Operational note.</strong> Arsenal curation runs as hybrid editorial: machine ingestion plus expert human curation plus tumor-board consumption. A continuously updated evidence and opportunity graph fed by literature, approvals, trials, sponsor access policies, and internally observed outcomes; AI generates, clinicians adjudicate. Own the longitudinal dashboard product, but make it interoperable from day one. RCRF is an integration partner, not the product core, and ONC FHIR plus Cures Act information-blocking rules favor a standards-based portable architecture. Vendor websites don't become the live database; instead, versioned test menus, connectors, and change-control. <em>Confidence: medium on curation operating model, high on the dashboard ownership and interoperability stance.</em></p>
+</div>
+</section>
+
+<!-- ============================ 7. SAMPLE & LAB ============================ -->
+<section id="lab">
+<h2><span class="num">7.</span> Sample &amp; lab logistics</h2>
+
+<h3>The architecture</h3>
+<p>Three layers, each with a defined owner:</p>
+<div class="grid-3">
+  <div class="card">
+    <h4>Tissue supply line - RCRF</h4>
+    <p style="font-size:14px;">RCRF (Rare Cancer Research Foundation) is the tissue acquisition + bio-banking + in-house pathology + clinical-history retrieval partner. Patient-powered model; strong rare-disease cohort access. <strong>Layered legal structure</strong>: MSA + tissue/custodial agreement + DUA/BAA + optional FMV secondment. Not equity - IRS inurement rules prohibit shareholder benefit in a 501(c)(3).</p>
+  </div>
+  <div class="card">
+    <h4>Functional layer - Travera (in-house)</h4>
+    <p style="font-size:14px;">Travera SMR biophysical platform. CLIA-certified in 50 states + NYS-CLEP. RTS (tumor, 2-day TAT) + NOVA (immune, 3-day TAT, blood-based). &gt;100 FDA-approved drugs in library. Non-destructive; compatible with parallel scRNA/proteomics.</p>
+  </div>
+  <div class="card">
+    <h4>Molecular layer - NGS partner (category to fill)</h4>
+    <p style="font-size:14px;"><strong>The slot, not the name.</strong> What we need is a reliable way to get NGS done. The partnership doesn't have to be exclusive, and the partner doesn't have to be one specific vendor. <strong>Variantyx is the closest current candidate</strong> (WGS-oncology, distributed-CLIA model, negotiation in flight), but the same slot can be filled by anyone on the RFP shortlist (Tempus xE/xR, Personalis NeXT Dx, Caris WES/WTS, FoundationOne CDx). <strong>Upside if Variantyx lands:</strong> potential colocation with Travera to share CLIA overhead. Nice-to-have, not a requirement. Distributed-CLIA feasibility requires the clinical performing + reporting lab stays CLIA-certified and accountable; timeline 6–12mo on a mature workflow, 12–18mo for new assays.</p>
+  </div>
+</div>
+
+<h3>Pre-procedure tissue SOPs (not "leftover" tissue)</h3>
+<p>Solve tissue scarcity with pre-procedure SOPs; never plan on "leftover tissue." Federal CLIA retention requires pathology remnants preserved ≥2 years; CAP commonly requires paraffin blocks ~10 years - that's why AMC pathology is conservative about release. Operational fix: disease- and procedure-specific tissue SOP defining (a) diagnostic reserve, (b) live-cell aliquot priority, (c) backup FFPE reserve, (d) who signs off when tissue is scarce.</p>
+
+<h3>Vendor RFP package (next 4 weeks)</h3>
+<p>Standardized RFP template with our exact launch sample mix, volumes, TAT requirements, indemnities, PHI/data-rights terms, failure-remake policies - sent to all five sequencing shortlist candidates. Public capability pages are sufficient for shortlisting; pricing + TAT commitments + raw-data rights all require direct RFP.</p>
+
+<table>
+  <thead><tr><th>Vendor</th><th>Capability</th><th>What we want from the RFP</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Tempus xE/xR</strong></td><td>WES (xE; 19,000+ genes) standalone or with xR (transcriptome); orderable via Tempus Hub / paper req / EHR</td><td>Enterprise FastQ pricing (not publicly disclosed); volume tier; TAT commitments; PHI/data-rights for our use case; failure-remake policy</td></tr>
+    <tr><td><strong>Personalis NeXT Dx</strong></td><td>Comprehensive tumor + normal exome + transcriptome + immune profiling</td><td>Pricing at our launch volumes; ovarian + sarcoma fit; integration with their NeXT Personal Dx for MRD continuity</td></tr>
+    <tr><td><strong>Caris WES/WTS</strong></td><td>Whole-exome + whole-transcriptome with proprietary signatures</td><td>Indication-specific signatures we care about (HRD, fusion calls); raw-data access terms</td></tr>
+    <tr><td><strong>FoundationOne CDx</strong></td><td>FDA-cleared companion-diagnostic NGS panel</td><td>Where CDx coverage matters for reimbursement; complementary fit with our broader workups</td></tr>
+    <tr><td><strong>Variantyx WGS-oncology</strong></td><td>WGS-oncology; lead candidate for distributed-CLIA partnership (negotiation in flight, not signed)</td><td>Distributed-CLIA technical + regulatory workstream - kick off scoping, joint reporting design, quality-system posture, commercial terms. Optional colocation with Travera to share CLIA overhead is upside, not a deal requirement.</td></tr>
+  </tbody>
+</table>
+
+<div class="question"><span class="lbl">Open</span><strong>AMC tissue audit pilot (20–30 cases)</strong> - the single highest-value experiment not in public data. Capture chain-of-custody timestamps, pathology decisions, sample-adequacy scoring, downstream assay success rates across ovarian + sarcoma. Site selection, who runs it, timeline. To execute in T1.</div>
+
+<div class="question"><span class="lbl">Open</span>Banking redundancy - second CAP-accredited biorepository for geographic + capacity redundancy. Screening filter for any alternative = CAP biorepository accreditation, not brand-name marketing.</div>
+</section>
+
+<!-- ============================ 8. AI ============================ -->
+<section id="ai">
+<h2><span class="num">8.</span> AI / decision-support architecture</h2>
+
+<div class="panel decision">
+<strong>The architecture decision.</strong> Build the clinical core in-house. Buy commodity components. Keep v1 human-supervised and tumor-board-native. <strong>Do not</strong> build a foundation model in the seed window - that's a post-seed bet. Confidence: high on architecture, medium on team shape.</div>
+
+<h3>Stage-one (v1) architecture</h3>
+<p>Patient enters intake → molecular evidence retrieval → hypothesis generation → functional test selection → ranked therapy list → human tumor-board review → patient-facing report + access plan.</p>
+
+<table>
+  <thead><tr><th>Component</th><th>Function</th><th>Build / buy / hybrid</th></tr></thead>
+  <tbody>
+    <tr><td>Clinical intake agent</td><td>Structured history capture, prior-treatment timeline, sample inventory, consent flow</td><td>Build (light wrapper on commodity LLM)</td></tr>
+    <tr><td>Evidence retrieval engine</td><td>Pull NCCN-relevant guidance, peer-reviewed evidence, trial-recruitment status, sponsor access policies for the specific decision context</td><td>Build the orchestration; buy/license the source corpora</td></tr>
+    <tr><td>Hypothesis generation</td><td>Surface candidate therapies - guideline-listed + off-label + investigational + repurposing - from molecular + functional signal</td><td>Build (rules-based + retrieval-augmented)</td></tr>
+    <tr><td>Functional test planner</td><td>Pre-narrow the combinatorial drug-panel space before functional testing, given limited primary cells</td><td>Build initially; evaluate partners (Pangea Biomed, Cellworks named as candidates)</td></tr>
+    <tr><td>Ranked therapy list + rationale</td><td>Integrate molecular + functional + access feasibility into a ranked candidate set with mechanism rationale and evidence-level labels</td><td>Build - this is the moat</td></tr>
+    <tr><td>LLM communication layer</td><td>Translate technical findings to patient-appropriate language at the patient's expertise level; role-based views for oncologist vs. patient</td><td>Build (wrapper on commodity LLMs)</td></tr>
+    <tr><td>Tumor-board orchestration software</td><td>Surface results to human + AI tumor board; track dissent; document decision rationale</td><td>Build</td></tr>
+    <tr><td>Care-coordination engine</td><td>Eligibility checks, in-network cues, draw-site logistics, mobile options</td><td>Build core; buy CRM + scheduling + comms</td></tr>
+  </tbody>
+</table>
+
+<h3>The arsenal curation layer</h3>
+<p>Hybrid editorial: machine ingestion + expert human curation + tumor-board consumption. Pure scrape is unsafe; pure manual curation won't scale. Continuously updated evidence + opportunity graph fed by literature, approvals, trials, sponsor access policies, internally observed outcomes. AI finds + clusters hypotheses; clinicians + translational scientists adjudicate what's real, actionable, worth surfacing.</p>
+
+<h3>Team nucleus (v1)</h3>
+<div class="grid-2">
+  <div class="card">
+    <h4>Hires for seed window</h4>
+    <ul>
+      <li><strong>1 Clinical informatics PM / product owner</strong> - owns spec, prioritization, the operator UX, and the relationship with clinical leads</li>
+      <li><strong>1–2 retrieval/ranking engineers</strong> - orchestrate evidence retrieval, ranking, and the LLM communication layer</li>
+      <li><strong>Part-time oncology scientist input</strong> - adjudication of arsenal additions and edge cases; pairs with the translational scientist team</li>
+    </ul>
+    <p class="footnote">Confidence: high on architecture, medium on team shape.</p>
+  </div>
+  <div class="card">
+    <h4>What we're not hiring (yet)</h4>
+    <ul>
+      <li>No foundation-model team. Recent multi-agent AI is useful as a design pattern and structured critique, not as an autonomous oncology engine at launch.</li>
+      <li>No CAIO-grade head of AI in T1 - premature for v1 retrieval-copilot scope</li>
+      <li>No digital-twin engineers - flagged as future-state in <code>insights.html</code>; not in v1</li>
+    </ul>
+  </div>
+</div>
+
+<div class="panel callout">
+<strong>Why this beats both extremes.</strong> Pure rules engine doesn't scale across the long tail. Pure LLM hallucinates and can't be defended in a tumor board. The retrieval + ranking architecture under human supervision is defensible in front of an oncologist, auditable post-hoc, and accumulates the labels (functional + outcomes) that make a future foundation-model push tractable. Build the substrate first; the model push gets the next round.</div>
+
+<h3>Why proxy outcomes still matter (post-seed flywheel)</h3>
+<p>Even without a foundation model in this window, every functional drug tested generates a "what would have happened if we'd used this drug instead" label - even for drugs the patient never received. Estimated &gt;20× labels per patient vs. 1× from EMR. By month 18 we have a labeled dataset that no other player can match. That's the seed of the post-seed model push.</p>
+</section>
+
+<!-- ============================ 9. TUMOR BOARD ============================ -->
+<section id="tumorboard">
+<h2><span class="num">9.</span> Tumor board model</h2>
+
+<div class="panel decision">
+<strong>Posture decision.</strong> Position our report as a tumor-board <em>input</em>, not a competitor. Produce a structured pre-read; let the local or shared MTB adjudicate. ESMO's recent molecular-tumor-board recommendations focus on structure, workflow, documentation, quality indicators, follow-up - exactly the posture we want. Lowers physician defensiveness; product becomes additive. Confidence: high.</div>
+
+<h3>The structured pre-read format</h3>
+<p>Every tumor board input we produce contains the same six elements, regardless of indication:</p>
+<ol>
+  <li><strong>Clinical question.</strong> What decision is being made and what evidence threshold should it be made against?</li>
+  <li><strong>Sample provenance.</strong> Which tissue, what date, what processing, what assays run, with which vendor/lab.</li>
+  <li><strong>Ranked options.</strong> Top candidate therapies with rationale - molecular signal, functional signal where available, mechanism logic.</li>
+  <li><strong>Evidence level.</strong> Per option: NCCN level, peer-reviewed strength, off-label vs. on-label, single-patient IND viability.</li>
+  <li><strong>Access route.</strong> Per option: insurance-covered, off-label-with-appeal, comp-use, sponsor program, trial enrollment, dormant-asset route.</li>
+  <li><strong>Monitoring plan.</strong> What we'll watch post-decision and what triggers re-tumor-board.</li>
+</ol>
+
+<h3>Where the tumor board lives</h3>
+<div class="question"><span class="lbl">Open</span>Tumor board location - virtual + our-hosted vs. embed in AMC MTBs vs. hybrid. Affects channel + headcount design. Decision is sensitive to indication: ovarian short-tail decisions may need urgency that AMC MTB cadence can't support; sarcoma long-tail may benefit from embedding. Decision in T1.</div>
+
+<h3>Operational specifics</h3>
+<ul>
+  <li><strong>Cadence.</strong> Weekly clinic-hosted tumor board operational by month 6 (T2 milestone in the original cash plan; preserved here as an explicit deliverable).</li>
+  <li><strong>Participants.</strong> Clinic clinical lead + translational scientist + drug-access lead + treating oncologist (virtually) + AI agent surfacing dissent within the ranked list.</li>
+  <li><strong>Documentation.</strong> Tumor-board orchestration software captures dissent, alternatives considered, evidence cited, decision rationale. This is the substrate for the outcomes register at month 12–18.</li>
+</ul>
+
+<div class="know"><span class="lbl">Resolved</span>Off-label-with-appeal pathway requires the dossier work to be done before the tumor board, not after. Build medical-necessity dossier with functional + molecular evidence; engage payer; advocate. The tumor-board input becomes the dossier substrate.</div>
+</section>
+
+<!-- ============================ 10. DRUG ACCESS ============================ -->
+<section id="access">
+<h2><span class="num">10.</span> Drug access architecture</h2>
+
+<p>Drug access is the module where the clinic does what an oncologist's office can't - it <em>finds and obtains</em> the drug. This is one of the strongest sources of patient lock-in and one of the operationally hardest functions. Hybrid model: internalize judgment, outsource routine.</p>
+
+<h3>The 4 access lanes</h3>
+<div class="grid-2">
+  <div class="card">
+    <h4>Lane 1 - Direct sponsor expanded access / compassionate use</h4>
+    <p style="font-size:14px;">Negotiate directly with pharma's medical-affairs team. Clinic-level pre-existing relationships make this faster than ad-hoc patient-by-patient outreach. FDA's Reagan-Udall Project Facilitate provides navigation support. <strong>Drug-donation flywheel</strong>: clinic trades outcomes data for donated supply - pharma gets clinical learning outside randomized trials, patient gets drug, clinic keeps data.</p>
+  </div>
+  <div class="card">
+    <h4>Lane 2 - Managed-access specialists</h4>
+    <p style="font-size:14px;">Outsourced routes for cross-border access, complex logistics, and breadth across many sponsors at once. <strong>Shortlist:</strong> myTomorrows, Clinigen, Inceptua. Pick 1–2 preferred routes for the first 25 patients - a near-term deliverable.</p>
+  </div>
+  <div class="card">
+    <h4>Lane 3 - Repurposing / dormant-asset routes</h4>
+    <p style="font-size:14px;">NCATS "Discovering New Therapeutic Uses" program; Cures Within Reach; Anticancer Fund; pharma open-innovation programs (AstraZeneca, Lilly OIDD, Pfizer Compound Transfer). Useful when the best functional + molecular candidate is a shelved or deprioritized asset.</p>
+  </div>
+  <div class="card">
+    <h4>Lane 4 - Internal access team</h4>
+    <p style="font-size:14px;">Owns the patient-specific path. Single-patient IND logic (FDA requires physician IND submission, ordinarily 30-day window unless authorized earlier); off-label medical-necessity narrative; payer appeals; patient/family communication. The high-judgment work lives here.</p>
+  </div>
+</div>
+
+<h3>Team shape</h3>
+<table>
+  <thead><tr><th>Role</th><th>Internal vs. external</th><th>When hired</th><th>Profile</th></tr></thead>
+  <tbody>
+    <tr><td>Senior access lead</td><td>Internal</td><td>Early T1 (M 0–6) - priority hire</td><td>JD/MD; sponsor-outreach experience; off-label / single-patient IND experience; payer-appeal track record</td></tr>
+    <tr><td>2–3 access specialists</td><td>Internal</td><td>Mid T1 (M 6–12)</td><td>Benefit verification + prior-auth + medical-necessity drafting; pharma medical-affairs relationship-building</td></tr>
+    <tr><td>Outside counsel</td><td>External / retained</td><td>Day-1 standing arrangement</td><td>FDA expanded-access + single-patient IND + comp-use specialist counsel</td></tr>
+    <tr><td>Regional partners</td><td>External / contracted</td><td>As needed by case load</td><td>International logistics, cross-border drug movement, specialty-pharmacy routing</td></tr>
+  </tbody>
+</table>
+
+<div class="question"><span class="lbl">Open</span>Senior drug-access lead hire - internal vs. fractional with outside counsel? JD/MD profile? Who do we already know in this profile through KV's network? Near-term deliverable.</div>
+
+<div class="question"><span class="lbl">Open</span>Managed-access partner pick - 1–2 preferred routes among myTomorrows / Clinigen / Inceptua for the first 25 patients. Commercial terms + outcome-data exchange terms to be negotiated.</div>
+
+<h3>The drug-donation flywheel</h3>
+<div class="panel callout">
+<p>Pharma's incentive to donate: data generated in personalized oncology cases is extremely valuable for understanding drug potential outside randomized trials. The KV essay framing: <em>"pharmaceutical and biotech companies would fall over themselves to donate their drugs through compassionate use and/or clinical trials. More experimental drugs and off-label drugs provided free or at a discount would further attract more patients in a positive feedback loop."</em> The flywheel takes time to start - 6–12 months of relationship-building before donations flow predictably. The senior access lead's first 12 months are largely about establishing this relationship density.</p>
+</div>
+
+<h3>KV-portfolio drug-supply backstop</h3>
+<p>KV's portfolio includes small-molecule + peptide synthesis capacity (NH-based, state-specific allowance) that could manufacture post-Phase-1, pre-approval drugs for edge cases. Not a primary access lane, but a meaningful backstop for situations where neither sponsor expanded access nor managed-access can resolve. To be scoped with KV portfolio support team in T1.</p>
+</section>
+
+<!-- ============================ 11. MONITORING ============================ -->
+<section id="monitoring">
+<h2><span class="num">11.</span> Monitoring stack</h2>
+
+<p>One-time testing makes diagnostics episodic. Longitudinal monitoring is what changes the business from "lab" to "infrastructure" - multiple touchpoints per year, multiple decisions per touchpoint, recurring revenue, biologically meaningful baselines. The monitoring-subscription tier is the commercial vehicle (pricing deferred - see §13).</p>
+
+<h3>The monitoring stack - by modality</h3>
+<table>
+  <thead><tr><th>Modality</th><th>Cadence (cohort-default)</th><th>What it triggers</th><th>Vendor / status</th></tr></thead>
+  <tbody>
+    <tr><td>MRD (tumor-informed)</td><td>q4–6wk on active tx; q8–12wk surveillance for 2yrs post-definitive; then less</td><td>Recurrence detection; re-tumor-board; re-workup</td><td>Signatera (Natera) vs. Personalis NeXT Personal Dx; pick by cohort</td></tr>
+    <tr><td>MRD (tissue-free)</td><td>Same cadence; used where tissue limited</td><td>Same as above</td><td>Guardant Reveal</td></tr>
+    <tr><td>ctDNA / cfDNA surveillance</td><td>Quarterly or signal-driven</td><td>Confirm MRD trends; identify resistance mutations</td><td>Integrated; multiple vendors</td></tr>
+    <tr><td>Immune fingerprint (Travera NOVA)</td><td>Periodic - patient-stable baseline</td><td>Detect deviations as treatment-related signal (e.g., a documented post-vaccine T-cell mass shift in an experimental therapy)</td><td>Travera in-house; bioRxiv 2026 stability validated</td></tr>
+    <tr><td>Symptom &amp; AE tracking</td><td>Continuous via patient app</td><td>Toxicity flags; early relapse detection</td><td>Standard care platform feature</td></tr>
+    <tr><td>Re-testing on signal</td><td>Triggered</td><td>Full functional + molecular on new sample; tumor board re-convenes</td><td>Core loop</td></tr>
+  </tbody>
+</table>
+
+<h3>Cohort-specific cadence (launch defaults)</h3>
+<table>
+  <thead><tr><th>Cohort</th><th>Default cadence</th><th>Anchor</th></tr></thead>
+  <tbody>
+    <tr><td>Metastatic solid on active systemic tx</td><td>Blood every 4–6 weeks + imaging every 8–12 weeks</td><td>Disease biology + treatment landmarks</td></tr>
+    <tr><td>Post-definitive high-risk surveillance</td><td>ctDNA/MRD every 8–12 weeks for first 2 years, then less</td><td>Regulator + consensus group direction</td></tr>
+    <tr><td>Myeloma / heme</td><td>Defined response landmarks, then every 3–6 months in maintenance</td><td>Cohort-standard practice</td></tr>
+  </tbody>
+</table>
+<div class="footnote">Confidence: medium-low. Anchor evaluation to landmark timepoints, not continuous ad-hoc testing. Cohort defaults to be locked in per-indication monitoring protocol documents in T1.</div>
+
+<div class="panel good">
+<strong>The immune-fingerprint result is the operationally distinctive piece.</strong> Travera's bioRxiv 2026 finding - each person has a stable T-cell-mass distribution; within-patient variation over time is significantly smaller than across-patient - is what makes our monitoring biologically meaningful. It establishes the baseline against which treatment-induced shifts (e.g., a documented post-experimental-vaccine T-cell mass shift in a fully-resourced case) can be detected. This is the kind of measurement that turns monitoring from generic surveillance into individualized signal.</div>
+
+<h3>The patient-facing dashboard</h3>
+<div class="know"><span class="lbl">Resolved</span>Own the longitudinal dashboard product, but make it interoperable from day one. RCRF as integration partner, not product core. ONC FHIR + Cures Act information-blocking framework favor standards-based portable architecture, not nonprofit-controlled bespoke frontend. Keep current via source-of-truth connectors, versioned test menus, vendor metadata, formal change-control cadence - vendor websites do not become the live database. <span class="conf">[High]</span></div>
+
+<div class="question"><span class="lbl">Open</span>Dashboard MVP feature set - v0 vs. v1, FHIR scope, USCDI compliance level, vendor connectors required for first 25 patients. Strategic deliverable.</div>
+
+<h3>Why not Ultima for in-house methylation/MRD (yet)</h3>
+<div class="know"><span class="lbl">Resolved</span>Clinic-owned methylation/MRD on Ultima is technically possible but should be R&amp;D / registry project, not launch dependency. Ultima is positioning around ultra-sensitive MRD + WGS/ppmSeq workflows. Owning the assay still requires design, analytical validation, reference materials, bioinformatics validation, CLIA deployment, ongoing quality management. <strong>Pilot in registry mode first; bring in-house only if complexity is worth it.</strong> <span class="conf">[Medium]</span></div>
+
+<div class="question"><span class="lbl">Open</span>Ultima registry-mode pilot scoping doc - patients, samples, learning objective ahead of any clinical claim. Strategic deliverable.</div>
+</section>
+
+<!-- ============================ 12. GTM ============================ -->
+<section id="gtm">
+<h2><span class="num">12.</span> Channel &amp; GTM</h2>
+
+<h3>The channel architecture</h3>
+<p>Three primary channels, two supporting. The product is the same across all - service intensity and price flex.</p>
+
+<div class="grid-2">
+  <div class="card">
+    <h4>Channel 1 - AMC-embedded (primary referral pipeline)</h4>
+    <p style="font-size:14px;"><strong>Anchors:</strong> DFCI, Vanderbilt, UCSF. Possibly DFCI's rare-disease program first (autonomy to use alternative reflex tests). Vanderbilt histotripsy study is the live proof point.</p>
+    <p style="font-size:14px;"><strong>What we do.</strong> Pre-agreed tissue triage pathway with 7 embedded relationships per site. Disease-specific tissue SOPs. Joint case-review cadence. Optionally a tumor-board presence inside the AMC MTB.</p>
+    <p style="font-size:14px;"><strong>What we get.</strong> Qualified flow of recurrent-ovarian and sarcoma cases. Tissue at the diagnostic biopsy or recurrence resection. Co-investigators on the outcomes register publication. Distribution credibility.</p>
+  </div>
+  <div class="card">
+    <h4>Channel 2 - RCRF / patient-foundation</h4>
+    <p style="font-size:14px;"><strong>Anchor:</strong> RCRF (Christine Spencer, Marshall). Patient-powered tissue donation + clinical-history retrieval. Particularly strong for rare-histology long-tail (sarcoma).</p>
+    <p style="font-size:14px;"><strong>What we do.</strong> MSA + tissue/custodial + DUA/BAA layered structure (not equity). Joint patient navigation. Co-developed registry-discount eligibility flow.</p>
+    <p style="font-size:14px;"><strong>What we get.</strong> Late-line patients with retrievable banked tissue + FastQ files. Patient-trust brand association. The "data substrate" that funds the outcomes register.</p>
+  </div>
+  <div class="card">
+    <h4>Channel 3 - Concierge / direct patient</h4>
+    <p style="font-size:14px;"><strong>Anchors:</strong> Selectively. Concierge primary-care practices (Private Medical NYC/SF/Miami; similar) as qualified-lead sources. Patient foundations beyond RCRF (sarcoma alliance, ovarian cancer research alliance).</p>
+    <p style="font-size:14px;"><strong>What we do.</strong> Light brand presence. Capacity-limited bespoke-tier inquiries route here. Organic flywheel from physician + caregiver networks.</p>
+    <p style="font-size:14px;"><strong>What we get.</strong> The whale revenue that funds platform investment; the urgency cases that prove price point.</p>
+  </div>
+  <div class="card">
+    <h4>Channel 4 - Pharma / biotech (post-month-12)</h4>
+    <p style="font-size:14px;"><strong>Anchors:</strong> Pharma medical-affairs relationships established via the drug-access function. First services SOW signed by month 18.</p>
+    <p style="font-size:14px;"><strong>What we do.</strong> Outcomes-data exchange for drug donation; small fee-for-service contracts; data-licensing scoping discussions.</p>
+    <p style="font-size:14px;"><strong>What we get.</strong> Recurring services revenue. Patient access to investigational and off-label drugs at favorable cost. Validation of the data asset.</p>
+  </div>
+</div>
+
+<h3>Channel sequencing (18-month plan)</h3>
+<table>
+  <thead><tr><th>Window</th><th>Primary motion</th><th>Channel emphasis</th></tr></thead>
+  <tbody>
+    <tr><td>M 0–3</td><td>Stand up AMC tissue triage with first 2 sites (DFCI + Vanderbilt). Finalize RCRF MSA. Hire senior clinical leads + access lead.</td><td>AMC + RCRF</td></tr>
+    <tr><td>M 3–6</td><td>Launch with first 10 learning cases - primarily AMC + RCRF sourced. Establish AMC tissue SOPs. Platform v0.</td><td>AMC + RCRF</td></tr>
+    <tr><td>M 6–12</td><td>25–30 paying patients. Add UCSF as third AMC anchor. Begin concierge channel selectively. Weekly tumor board operational. Drug-access function live.</td><td>AMC + RCRF + selective concierge</td></tr>
+    <tr><td>M 12–18</td><td>75–100 completed episodes. First outcomes register published. First pharma services SOW or data partnership.</td><td>All four channels active</td></tr>
+  </tbody>
+</table>
+
+<h3>What we're not doing in GTM (yet)</h3>
+<ul>
+  <li><strong>No employer benefits motion.</strong> Self-insured-employer cancer benefits is a post-seed channel; requires brand presence and outcomes evidence first. Don't dilute the launch focus.</li>
+  <li><strong>No DTC marketing.</strong> Premature; the bespoke tier fills organically through concierge + foundation referrals.</li>
+  <li><strong>No international cash markets in the seed window.</strong> Mentioned in <code>insights.html</code> roadmap (Mexico, South Korea) - strategic, but not in T1 or T2.</li>
+  <li><strong>No volume push into community oncology.</strong> Community oncology is where the volume sits long-term, but it requires reimbursement traction to convert; not yet.</li>
+</ul>
+</section>
+
+<!-- ============================ 13. PRICING ============================ -->
+<section id="pricing">
+<h2><span class="num">13.</span> Pricing &amp; access policy</h2>
+
+<p>Explicit price points are deferred until first-10-case learnings and a comparable-pricing analysis are in hand. This section sets the policy framework - the design space the eventual prices have to live inside, and the access-policy rails that hold regardless of where the prices land.</p>
+
+<div class="panel decision">
+<strong>Pricing posture.</strong> Three commercial components, sized separately. Core decision episode (one-time) is the flagship. Monitoring is a recurring subscription with cohort-specific cadence. Bespoke add-on is a capacity-limited overlay that buys service intensity, not better science. Specific dollar figures are out of scope for this doc and will be tracked separately closer to launch.</div>
+
+<h3>What we're optimizing for when we lock the price</h3>
+<div class="grid-2">
+  <div class="card">
+    <h4>Defensibility</h4>
+    <p style="font-size:14px;">Below the PMH ceiling. Above pure-genomics floors. In line with peer concierge cash-pay offerings. The number has to be one the recipient can repeat to a peer without having to justify.</p>
+  </div>
+  <div class="card">
+    <h4>Patient willingness-to-pay at the decision moment</h4>
+    <p style="font-size:14px;">Recurrent ovarian and late-line sarcoma cohorts face urgency + ambiguity. Willingness-to-pay is highest exactly at the decision moment we're priced around - and elastic to perceived value of the deliverable.</p>
+  </div>
+  <div class="card">
+    <h4>Target gross margin</h4>
+    <p style="font-size:14px;">Sufficient to fund the platform build at planned headcount (RCRF, Travera lab continuity, Variantyx ops, AI tooling, drug-access function) without leaning on reimbursement or future-round capital. Target band will be locked once the first-10-case cost stack is empirical.</p>
+  </div>
+  <div class="card">
+    <h4>Repeatability</h4>
+    <p style="font-size:14px;">Understandable in one sentence. Defensible per case. Repeatable across patients without negotiation. No per-case pricing; no bespoke-tier creep into the core.</p>
+  </div>
+</div>
+
+<h3>The three-component model (no prices yet)</h3>
+<table>
+  <thead><tr><th>Component</th><th>What it covers</th><th>Why it's priced this way</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Core decision episode</strong> (one-time)</td>
+      <td>Indication-specific molecular + functional workup, integrated decision report, tumor-board input, drug-access plan, 30-day post-decision support window.</td>
+      <td>Anchored to the clinical decision moment, not the testing menu. Buying a decision, not a panel.</td>
+    </tr>
+    <tr>
+      <td><strong>Monitoring subscription</strong> (recurring)</td>
+      <td>Cohort-specific cadence, MRD vendor-routed, ctDNA, immune-fingerprint serial, patient app, dashboard, re-tumor-board on signal.</td>
+      <td>Cadence is biological, not contractual. Subscription aligns incentives with the patient over time and converts the business from episodic to longitudinal.</td>
+    </tr>
+    <tr>
+      <td><strong>Bespoke add-on</strong> (capacity-limited)</td>
+      <td>Additional human time, deeper omics, single-cell + multiplex protein where useful, travel/logistics, extended monitoring, founder-tier experience.</td>
+      <td>Premium dollars subsidize the platform; they don't buy a different molecular core. The "whale tension" resolves only if this line is held.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Cost-stack components (induction episode)</h3>
+<p>The components below drive the eventual gross-margin model. Specific dollar amounts will be empirical once the first-10-case learning cohort is run.</p>
+<ul>
+  <li><strong>RCRF handling + bio-banking</strong> - currently the largest single line; pricing has risen following recent high-profile cases.</li>
+  <li><strong>Sequencing pass-through</strong> - Tempus xE / Personalis / Caris / FoundationOne / Variantyx, depending on indication and vendor RFP outcomes. Offset where reimbursement applies.</li>
+  <li><strong>Travera functional layer</strong> - internal, covers FTE/cost on the SMR pipeline.</li>
+  <li><strong>Coordination FTE depreciation</strong> - significant; the per-case load on care coordinators, clinical leads, and access specialists is the largest non-vendor cost driver. To be quantified empirically.</li>
+  <li><strong>Drug-access lift</strong> - highly variable per case. Some cases nearly free (insurance-covered or sponsor expanded access); others heavy (single-patient IND, appeals, donation negotiation).</li>
+  <li><strong>Monitoring (MRD send-out + ancillaries)</strong> - modeled separately as subscription gross-margin; first cohort sized to validate the per-month economics.</li>
+</ul>
+
+<h3>Registry-discount policy framework</h3>
+<div class="know"><span class="lbl">Resolved</span>Registry-discount eligibility = income + "data value" + hardship, not diagnosis prestige. Sensible policy: automatic full or near-full subsidy at ≤250% of 2026 federal poverty guideline, sliding scale 250–400% FPL, committee review above when there's exceptional financial toxicity or high strategic data value. HHS updates poverty guidelines annually; standard cash-pay precedents publicly state assistance decisions are based on household income + life circumstances - an FPL-based policy is legible + familiar. <span class="conf">[Medium]</span></div>
+
+<table>
+  <thead><tr><th>Income band</th><th>Discount</th><th>Decision authority</th></tr></thead>
+  <tbody>
+    <tr><td>≤250% FPL</td><td>Full or near-full subsidy</td><td>Automatic</td></tr>
+    <tr><td>250–400% FPL</td><td>Sliding scale</td><td>Automatic by formula</td></tr>
+    <tr><td>&gt;400% FPL</td><td>Committee review</td><td>Discount committee - for exceptional financial toxicity or high strategic data value</td></tr>
+  </tbody>
+</table>
+<div class="footnote">FPL bands are income-based and independent of the eventual cash-price decision. Policy doc to be codified before first patient (near-term deliverable). Discount committee composition + cadence + criteria to be established with clinical leads and finance.</div>
+
+<h3>Reimbursement modeled as partial offset, not underwriting</h3>
+<div class="know"><span class="lbl">Resolved</span>Treat reimbursement as partial offset, not underwriting assumption. CMS national NGS coverage is limited to specific criteria (FDA-cleared NGS in advanced/recurrent/metastatic disease, CLIA lab, ordered by treating physician); RNA-sequencing / protein analysis often left to MAC or payer discretion. Some MRD products now have defined Medicare coverage. In practice, reimbursement can offset part of the molecular layer - not most of a concierge decision episode. <span class="conf">[Medium]</span></div>
+
+<p>The cash-pay model holds whether reimbursement offset materializes early or late. As Variantyx distributed-CLIA reporting matures, the offset rises; the core price doesn't depend on it.</p>
+
+<h3>What's deliberately out of this section</h3>
+<ul>
+  <li><strong>Specific dollar price points</strong> for the core episode, the monitoring subscription, or the bespoke add-on. These live in a separate working pricing model and will be locked closer to launch.</li>
+  <li><strong>Empirical cost-stack numbers</strong> for the components above. These get filled in with the first-10-case learning cohort.</li>
+  <li><strong>Target gross margin band.</strong> Same - empirical after first cases.</li>
+  <li><strong>Revenue projections</strong> tied to price × episodes. Modeled separately once pricing is locked.</li>
+</ul>
+
+<h3>Open deliverables for §13</h3>
+<div class="question"><span class="lbl">Open</span><strong>Final cash-price decision</strong> for the core decision episode - gated on first-10-case learnings + comparable-pricing analysis + cost-stack empirics. Tracked in a separate pricing working model; not in this doc.</div>
+<div class="question"><span class="lbl">Open</span><strong>Bespoke-tier definition document</strong> - what's explicitly IN (extra human time, deeper omics, logistics, extended monitoring) and OUT (different molecular core). Critical to publish before the first bespoke inquiry lands; without it, the "whale tension" reopens.</div>
+<div class="question"><span class="lbl">Open</span><strong>Reimbursement-offset model</strong> per indication - concrete % offset against the eventual core price; refined as Variantyx distributed-CLIA matures.</div>
+<div class="question"><span class="lbl">Open</span><strong>Registry-discount policy doc codification</strong> - FPL bands + committee composition + decision criteria, locked before first patient.</div>
+<div class="question"><span class="lbl">Open</span><strong>Monitoring-subscription gross-margin validation</strong> - empirical per-month economics modeled with the first cohort on subscription.</div>
+</section>
+
+<!-- ============================ 14. ORG ============================ -->
+<section id="org">
+<h2><span class="num">14.</span> Org &amp; 18-month hiring plan</h2>
+
+<h3>Founder roles (carrying in)</h3>
+<table style="width:auto; min-width:280px;">
+  <thead><tr><th>Person</th><th>Salary</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Rob Kimmerling</strong></td><td>$220K</td></tr>
+    <tr><td><strong>Selim Olcum</strong></td><td>$220K</td></tr>
+  </tbody>
+</table>
+
+<h3>Hires by tranche (T1 = M 0–12 Foundation+Operational; T2 = M 12–18 Evidence)</h3>
+<p style="font-size:13.5px; color:var(--muted); margin: 4px 0 8px;"><strong>Travera carry-overs (slot into the tranches below):</strong> 2 Directors of Research ($150K ea.), 1 lab manager / technician ($135K), 4 CLIA technicians ($100K ea.), 1 BD Ops ($250K). Cells below note which positions a Travera employee fills so we don't double-count.</p>
+<table>
+  <thead><tr><th>Function</th><th>T1 (M 0–12) - Foundation + Operational</th><th>T2 (M 12–18) - Evidence</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Clinical</strong></td>
+      <td>Early T1 (M 0–6): 1 senior clinical lead (oncology MD); 1 Director of Research <em>(<b>Travera carry-over</b>, $150K)</em>; part-time oncology scientist input. Mid T1 (M 6–12): +1 Director of Research <em>(Travera carry-over, $150K)</em>; +1 employed oncologist (multi-state licensed for telemed).</td>
+      <td>+1–2 employed oncologists by indication; clinical operations director</td>
+    </tr>
+    <tr>
+      <td><strong>Operations &amp; coordination</strong></td>
+      <td>Early T1: 1 operations / coordination lead; 1 care coordinator. Mid T1: +1–2 care coordinators (target ~50 patients each).</td>
+      <td>+1 ops manager (multi-AMC partnerships); +1–2 care coordinators</td>
+    </tr>
+    <tr>
+      <td><strong>Data &amp; product</strong></td>
+      <td>Early T1: 1 clinical informatics PM. Mid T1: +1–2 retrieval/ranking engineers; +1 bioinformatician.</td>
+      <td>+1 engineer (dashboard); +1 bioinformatician</td>
+    </tr>
+    <tr>
+      <td><strong>Drug access</strong></td>
+      <td>Early T1: 1 senior access lead (JD/MD profile); outside counsel retained. Mid T1: +2–3 access specialists.</td>
+      <td>+1 pharma BD lead (services contracts + data licensing scoping)</td>
+    </tr>
+    <tr>
+      <td><strong>Lab ops</strong></td>
+      <td>Early T1: Travera lab continuity intact; lab director-of-record at Travera; 1 lab manager / technician <em>(<b>Travera carry-over</b>, $135K)</em>; 4 CLIA technicians <em>(<b>Travera carry-over</b>, $100K ea.)</em>. Mid T1: +1 lab ops manager for orchestration of Variantyx + MRD vendors.</td>
+      <td>+1 QA/QC specialist as volume grows</td>
+    </tr>
+    <tr>
+      <td><strong>Reimbursement / billing / regulatory</strong></td>
+      <td>Early T1: outside counsel; Variantyx-aligned reimbursement specialist via services agreement (per OncoAlly structure if applicable). Mid T1: +1 in-house billing / RCM coordinator (Athenahealth or equivalent for claim ops).</td>
+      <td>+1 regulatory affairs lead (CPT submission prep; FDA breakthrough designation scoping)</td>
+    </tr>
+    <tr>
+      <td><strong>GTM</strong></td>
+      <td>Early T1: 1 BD Ops <em>(<b>Travera carry-over</b>, $250K)</em>. Mid T1: 1 channel partnerships lead (AMC + RCRF deepening).</td>
+      <td>+1 BD / partnerships</td>
+    </tr>
+    <tr>
+      <td><strong>G&amp;A</strong></td>
+      <td>Early T1: fractional finance / HR via KV portfolio support; lightweight. Mid T1: +1 finance / ops manager.</td>
+      <td>+1 senior finance lead (CFO-equivalent if structurally needed)</td>
+    </tr>
+  </tbody>
+</table>
+<div class="footnote">Total approx headcount by month 18: ~20–25 across clinical + ops + data + access + lab + reimbursement + GTM + G&amp;A. Sized to deliver 75–100 paying episodes with capacity for monitoring continuity, not to scale past month 18 without additional capital. "Early T1" = months 0–6; "Mid T1" = months 6–12.</div>
+
+<h3>Hiring sequencing rationale</h3>
+<ul>
+  <li><strong>Senior clinical lead + senior access lead are the two early-T1 priority hires.</strong> Without these, the first 10 learning cases can't be run with clinical confidence and drug-access execution. Recruit through KV network + back-channel candidates pre-close.</li>
+  <li><strong>Clinical informatics PM in early T1; engineers in mid T1.</strong> The PM owns the v0 spec and the operator workflow; the engineers build against a stable spec, not a moving target.</li>
+  <li><strong>No CMO hire in T1.</strong> Earlier cash plan (Thread A) anticipated a CMO and CAIO in the first 6 months. In the Thread B framing, the senior clinical lead carries the CMO equivalent function until clinical scale justifies a separate hire (likely post-seed).</li>
+  <li><strong>Multi-state telemed licensing is operationally intensive.</strong> Each US state has its own licensure for telemedicine prescribing, especially for controlled substances. Compact licensure (IMLC) covers ~40 states but is paperwork-heavy. The ops lead's first 6 months include standing up the licensure operations function. CA and NY are non-IMLC and require independent licensure.</li>
+  <li><strong>Why T1 is the full 12 months.</strong> Foundation (M 0–6) and Operational Launch (M 6–12) are tightly coupled - the operational launch milestones (25–30 paying patients, weekly tumor board, drug access live) can't be cleanly separated from the foundation hires that enable them. Treating M 0–12 as a single Foundation+Operational tranche aligns capital release with the inflection point (first commercial proof) rather than an arbitrary 6-month boundary.</li>
+</ul>
+
+<h3>Run-rate (non-headcount)</h3>
+<table>
+  <thead><tr><th>Item</th><th>Estimate</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Corporate hygiene / lab maintenance</td><td>~$25K / mo</td><td>Depends on required CLIA activities</td></tr>
+    <tr><td>G&amp;A / etc.</td><td>~$25K / mo</td><td></td></tr>
+    <tr><td>Rent + utilities</td><td>$27K / mo</td><td></td></tr>
+    <tr><td>R&amp;D / CLIA materials to run samples (COGS)</td><td>~$50K / 3 mo</td><td>Scales with sample throughput</td></tr>
+  </tbody>
+</table>
+
+<div class="flag"><span class="lbl">Flag</span>Team retention at Travera - Rob has flagged that another short sprint without commitment will likely break the team. The seed round timing is itself a retention lever; delays carry team-attrition risk that the operating plan can't otherwise mitigate.</div>
+</section>
+
+<!-- ============================ 15. VENDORS ============================ -->
+<section id="vendors">
+<h2><span class="num">15.</span> Vendor &amp; partnership architecture</h2>
+
+<h3>The active partnership stack</h3>
+<table>
+  <thead><tr><th>Partner</th><th>Role</th><th>Status</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>RCRF</strong> (Rare Cancer Research Foundation)</td>
+      <td>Tissue acquisition, bio-banking, in-house pathology, clinical-history retrieval, data team (ex-Parker Institute)</td>
+      <td>Informal - Christine Spencer + Marshall. Travera integrating functional testing into the registry now.</td>
+      <td>Resource-strained nonprofit. Pricing raised significantly following high-profile case attention. Possible deeper structural relationship via MSA + custodial + DUA/BAA architecture (no equity per 501(c)(3) inurement rules).</td>
+    </tr>
+    <tr>
+      <td><strong>Variantyx</strong></td>
+      <td>Clinical sequencing - distributed-CLIA model</td>
+      <td>Negotiation in flight</td>
+      <td>Path to reimbursement. Could be reflex test for rare programs. Question on longevity (Quest partnership keeps program alive for now, not a forever bet). Best-case: rev-share partner, not JV.</td>
+    </tr>
+    <tr>
+      <td><strong>Vanderbilt</strong></td>
+      <td>Histotripsy study - monthly blood + functional immune monitoring</td>
+      <td>Active</td>
+      <td>Best proof-point pipeline for the monitoring story.</td>
+    </tr>
+    <tr>
+      <td><strong>DFCI</strong></td>
+      <td>Rare-disease program with autonomy to use alternative reflex tests</td>
+      <td>Receptive</td>
+      <td>Path to embed packaged genomic + functional offering. Priority AMC anchor.</td>
+    </tr>
+    <tr>
+      <td><strong>UCSF</strong></td>
+      <td>AMC anchor - to be developed</td>
+      <td>Target for mid-T1 partnership</td>
+      <td>Geography + clinical strength complement DFCI + Vanderbilt. Per-AMC named-person map is an early-T1 deliverable.</td>
+    </tr>
+    <tr>
+      <td><strong>Tempus</strong></td>
+      <td>Incumbent AMC sequencing contracts; FastQ source for retrieved patients</td>
+      <td>Patient-channel only</td>
+      <td>Not a partner - we don't own this. Quest is similar. Can't bill on send-out, only direct distributed-CLIA partners. RFP shortlist for comparison only.</td>
+    </tr>
+    <tr>
+      <td><strong>Broad Institute</strong></td>
+      <td>High-quality clinical-grade sequencing if not optimizing for reimbursement</td>
+      <td>Optional</td>
+      <td>Can't do distributed CLIA. Reference lab only.</td>
+    </tr>
+    <tr>
+      <td><strong>Ultima</strong></td>
+      <td>Potential ultra-high-depth panel / MRD partner</td>
+      <td>To explore in registry mode</td>
+      <td>"Friends at Ultima" - Jun to scope. Registry-mode pilot first; in-house only if complexity is worth it.</td>
+    </tr>
+    <tr>
+      <td><strong>KV portfolio (organ-on-chip, bespoke synthesis)</strong></td>
+      <td>Discovery + drug-manufacturing arms (e.g., NH-based small-molecule + peptide synthesis)</td>
+      <td>Internal portfolio</td>
+      <td>Vivodyne; small-molecule + peptide synthesis. Closes the loop on drug supply for off-label paths. Backstop, not primary access lane.</td>
+    </tr>
+    <tr>
+      <td><strong>SEngine (PARIS)</strong></td>
+      <td>External functional precision-medicine player</td>
+      <td>Posture decision pending</td>
+      <td>Clearest public example of clinically oriented patient-specific functional precision medicine. Competitor or potential collaborator? Worth a conversation.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Sequencing shortlist (RFPs out in T1)</h3>
+<p>Public capability pages are sufficient for shortlisting; pricing + TAT + raw-data rights require direct RFP. Shortlist: <strong>Tempus xE/xR · Personalis NeXT Dx · Caris WES/WTS · FoundationOne CDx · Variantyx WGS-oncology</strong>. Confidence: medium.</p>
+
+<h3>MRD vendor shortlist (cohort-specific picks in T1)</h3>
+<table>
+  <thead><tr><th>Vendor</th><th>Type</th><th>Where it fits</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Signatera</strong> (Natera)</td><td>Personalized tumor-informed ctDNA</td><td>Default when tissue is available; broad coverage</td></tr>
+    <tr><td><strong>Personalis NeXT Personal Dx</strong></td><td>Ultra-sensitive tumor-informed</td><td>Sarcoma-friendly; continuity with NeXT Dx workup</td></tr>
+    <tr><td><strong>Guardant Reveal</strong></td><td>Tissue-free ctDNA monitoring</td><td>When tissue-free is strategically important (e.g., LMS where tumor sheds poorly)</td></tr>
+    <tr><td><strong>clonoSEQ</strong> (Adaptive)</td><td>FDA-cleared for MM/CLL/ALL only</td><td>Heme cohorts only; not in our launch indications</td></tr>
+    <tr><td>Foresight, Veracyte</td><td>Emerging</td><td>Monitor; not in launch pick</td></tr>
+  </tbody>
+</table>
+<div class="footnote">Confidence: high on Proscia being wrong category; medium on final pick - depends on disease cohort + sample availability.</div>
+
+<h3>Drug-access partner shortlist</h3>
+<ul>
+  <li><strong>Sponsor expanded access (Project Facilitate for navigation):</strong> direct medical-affairs relationship-building; clinic-level pre-existing relationships make this faster.</li>
+  <li><strong>Managed-access specialists:</strong> myTomorrows · Clinigen · Inceptua - pick 1–2 preferred routes for first 25 patients.</li>
+  <li><strong>Repurposing / dormant-asset:</strong> NCATS "Discovering New Therapeutic Uses" · Cures Within Reach · Anticancer Fund · pharma open-innovation programs (AstraZeneca, Lilly OIDD, Pfizer Compound Transfer).</li>
+</ul>
+
+<h3>Banking redundancy</h3>
+<div class="know"><span class="lbl">Resolved</span>RCRF / Pattern Biobank = high-fit patient-powered partner. Screening filter for any alternative = CAP biorepository accreditation, not brand-name marketing. <span class="conf">[Medium]</span></div>
+<div class="question"><span class="lbl">Open</span>Second CAP-accredited biorepository for geographic + capacity redundancy. Strategic deliverable.</div>
+</section>
+
+<!-- ============================ 16. COMPLIANCE ============================ -->
+<section id="compliance">
+<h2><span class="num">16.</span> Compliance, regulatory, multi-state</h2>
+
+<h3>CLIA architecture</h3>
+<div class="know"><span class="lbl">Resolved</span>Distributed-CLIA with Variantyx is feasible only if the clinical performing + reporting lab remains CLIA-certified and accountable. Distributed logistics and shared bioinformatics are fine; distributed clinical accountability is not. After 2025 court vacatur + FDA's 2025 LDT reversion, pre-2024 LDT status quo returned - lowers near-term FDA friction but doesn't change CLIA need. Timeline: ~6–12 months piggybacking on mature CLIA workflow; 12–18 months if transferring new assays / specimen types / report claims. <span class="conf">[Medium]</span></div>
+
+<p>Travera's existing CLIA-certified status (50 states + NYS-CLEP) is the foundation. Molecular reporting runs through a distributed-CLIA arrangement with an NGS partner; Variantyx is the lead candidate but the slot is non-exclusive and any of the RFP-shortlisted vendors could fill it. Where we use AMC cores, we treat them as research unless the core is operating in CLIA-certified clinical mode for the specific assay + return path.</p>
+
+<h3>Cures Act / FHIR / USCDI</h3>
+<p>The longitudinal dashboard is FHIR/USCDI-compliant from day one. ONC information-blocking framework + Cures Act favor standards-based portable architecture - patients can take their data with them. This is also a tactical choice: avoids the "nonprofit-controlled bespoke frontend" failure mode, makes interop with future treating sites trivial.</p>
+
+<h3>Off-label and single-patient IND</h3>
+<table>
+  <thead><tr><th>Pathway</th><th>What it requires</th><th>Owner</th></tr></thead>
+  <tbody>
+    <tr><td>Off-label prescription (insurance-covered or appealed)</td><td>Medical-necessity dossier with functional + molecular evidence; physician prescriber willing to write; payer appeal pathway</td><td>Drug-access lead + outside counsel + tumor-board substrate</td></tr>
+    <tr><td>Single-patient IND</td><td>FDA requires physician IND submission; ordinarily 30-day window unless authorized earlier; sponsor coordination required</td><td>Drug-access lead + outside counsel; sponsor relationship density built over 12 mo</td></tr>
+    <tr><td>Sponsor compassionate use</td><td>Sponsor medical-affairs agreement; outcomes-data exchange terms; supply logistics</td><td>Senior access lead + counsel</td></tr>
+    <tr><td>Trial enrollment</td><td>Eligibility match; recruiting fee from sponsor where applicable</td><td>Care coordinator + access specialists</td></tr>
+  </tbody>
+</table>
+
+<h3>Multi-state telemedicine prescribing</h3>
+<div class="flag"><span class="lbl">Flag</span><strong>Multi-state telemedicine prescribing is the single biggest non-tech operational headache.</strong> Each US state has its own licensure requirements for telemedicine prescribing, especially for controlled substances (some chemotherapies) and biologics. Compact licensure (IMLC) covers ~40 states but is paperwork-heavy. CA and NY are non-IMLC; require independent licensure per employed oncologist. The clinic needs internal counsel + licensing operations function from day 1 - none of the seed documents addressed this with sufficient depth.</div>
+
+<h3>Consent &amp; data privacy</h3>
+<div class="question"><span class="lbl">Open</span>Tiered consent model - clinical / research / longitudinal / publication / biopharma / hereditary as independent levels. Patients should be able to opt out of registry / secondary use without losing access to clinical care. HIPAA permits de-identified secondary use; the bar for re-identification with multimodal data (WGS + EMR + outcomes) is high - consent flow must address this explicitly. To be drafted with outside counsel in T1.</div>
+
+<h3>FDA pathway (forward-looking, not in seed window)</h3>
+<p>CLIA covers the lab today. FDA Breakthrough Designation is a candidate pathway to open the CMS interface for national coverage - post-seed milestone. SaMD regulation may apply to the AI interpretation layer at sufficient scale; the v1 retrieval-copilot scope under human supervision is below that bar. Digital-twin (if pursued later) would likely trigger device regulation. Out of seed-window scope; flag for tracking.</p>
+
+<h3>Compliance organization in the seed window</h3>
+<ul>
+  <li><strong>Outside counsel retained from day 1</strong> - FDA expanded-access / single-patient IND / comp-use specialty counsel. Likely 2–3 firms across the relevant specialties (FDA regulatory, healthcare compliance, state-medical-board).</li>
+  <li><strong>In-house compliance/legal owner</strong> - likely the COO-equivalent in T1; may justify a standalone hire in T2 or post-seed.</li>
+  <li><strong>RCRF MSA + tissue/custodial + DUA/BAA</strong> - state-law counsel review of charter, board posture, consent language, data-rights - near-term deliverable.</li>
+  <li><strong>NGS-partner distributed-CLIA workstream</strong> - joint technical + regulatory scoping with the selected partner. Variantyx is the lead candidate; non-exclusive by design. Near-term deliverable.</li>
+</ul>
+</section>
+
+<!-- ============================ 17. CORPORATE STRUCTURE ============================ -->
+<section id="structure">
+<h2><span class="num">17.</span> Corporate structure decision</h2>
+
+<div class="panel decision">
+<strong>The open decision.</strong> Two structural options are on the table; the choice shapes governance, cap table, IP, and the team's day-1 commitment level. Decision is gated on the structural negotiation with existing Travera investors + Variantyx, which is separate from this operating plan but conditions it.</div>
+
+<h3>Two options</h3>
+<div class="grid-2">
+  <div class="card">
+    <h4>Option A - Full reset</h4>
+    <p style="font-size:14px;"><strong>What it is.</strong> A new company / new entity formed for the clinic; Travera plays a role inside it (assets carried over; founders join in operating roles). Mission-first. Jun's preferred framing if we're going greater-than-Travera.</p>
+    <p style="font-size:14px;"><strong>What it requires.</strong> Negotiated buyout / settlement with existing Travera investors (separately financed, not from this $12–15M operating seed). MIT/licensor consents on IP transfer. Clean cap table at close. New brand identity, board, equity structure.</p>
+    <p style="font-size:14px;"><strong>Pros.</strong> Clean governance and equity; mission alignment from day 1; team retention through committed agency (Rob has explicitly flagged this as the structural ask); easier to attract crossover/strategic investors in next round; brand resets around the clinic, not the diagnostic.</p>
+    <p style="font-size:14px;"><strong>Cons.</strong> Cap-table cleanup negotiation is the bottleneck (cost, timeline, MIT consent). If negotiation drags, T1 launch slips. Existing investor relations during the transition are sensitive.</p>
+  </div>
+  <div class="card">
+    <h4>Option B - Fold into Variantyx (OncoAlly path)</h4>
+    <p style="font-size:14px;"><strong>What it is.</strong> Per the OncoAlly term sheet: new entity formed by Variantyx that acquires all Travera assets. $10M pre-money: Variantyx 75% · KV 10% · Travera founders 15%, with 10% post-money option pool. KV 45-day option to invest into OncoAlly (target cash need ~$10M). Variantyx provides CLIA ops, NGS, bioinformatics, billing, regulatory for ≥2 years at lower-of (market price) or (direct cost + 10%). Deferred consideration to Travera holders via 5-yr 5% revenue CVR on TTM &gt;$50M + 5-yr stepped exit CVR. 5-person board: 3 Variantyx · 1 KV · 1 Travera founder.</p>
+    <p style="font-size:14px;"><strong>What it requires.</strong> MIT/licensor consents. 60-day exclusivity to Variantyx (already in term sheet). Acceptance of Variantyx's governance majority. Lower ambition framing - operate inside Variantyx's services orbit rather than as an independent clinic.</p>
+    <p style="font-size:14px;"><strong>Pros.</strong> Fastest path to operational launch; lower year-1–2 ops cost via Variantyx services; reimbursement infrastructure already exists; lower fundraising lift in T1.</p>
+    <p style="font-size:14px;"><strong>Cons.</strong> Governance majority sits with Variantyx (3-of-5 board). Operating model is "diagnostic + services" not "patient-as-customer clinic"; the mission framing weakens. Team retention risk if the agency Rob has flagged isn't there. Future strategic optionality is more constrained.</p>
+  </div>
+</div>
+
+<div class="panel callout">
+<strong>Recommendation logic (subject to refinement).</strong> The thesis for an N-of-1 clinic - patient-as-customer, decision-layer-first, AI-native retrieval copilot, drug-access execution - fits Option A's posture far better than Option B's services-orbit framing. The cap-table cleanup cost is the gating variable; if it's negotiable inside a reasonable window (say 90–180 days), Option A is the higher-expected-value path. Option B is the safety net if cleanup proves intractable or if the seed round doesn't materialize at scale.</div>
+
+<h3>What this operating plan assumes</h3>
+<ul>
+  <li><strong>Assumes Option A path.</strong> The plan is designed around a new entity with Travera assets carried in, an independent governance posture, and a separately financed cap-table cleanup. If Option B prevails, the operating plan still mostly stands (the clinical/operational stack is similar), but the org chart, brand, and board composition change.</li>
+  <li><strong>Cap-table cleanup is separately scoped.</strong> Not in the $12–15M operating seed. Whatever buyout figure is negotiated is funded through a separate financing track (could be additional seed-extension, bridge from existing investors, or rolled into Series A). This is the most important deviation from the prior Thread A cash plan, which embedded cleanup in T3.</li>
+  <li><strong>MIT/licensor consents are a critical path item.</strong> The OncoAlly term sheet flagged this; it applies under either structural option. T1 deliverable.</li>
+</ul>
+
+<div class="question"><span class="lbl">Open</span><strong>Final structural decision.</strong> Pending Tuesday Vinod pitch outcome + Rob/Variantyx alignment + cleanup-cost discovery. The operating plan can execute under either, but the timing and team-retention dynamics differ substantially.</div>
+</section>
+
+<!-- ============================ 18. ALLOCATION ============================ -->
+<section id="allocation">
+<h2><span class="num">18.</span> $12–15M operating seed allocation &amp; 18-month milestones</h2>
+
+<div class="panel decision">
+<strong>Use a $12–15M operating seed, separate from any cap-table cleanup.</strong> Stage it around proving four things: (1) patients pay, (2) physicians refer, (3) recommendations change decisions, (4) outcomes/data become pharma- and reimbursement-relevant. Confidence: medium-high.</div>
+
+<h3>Workstream allocation (indicative, flexible)</h3>
+<table>
+  <thead><tr><th>Workstream</th><th class="num">$M</th><th>What it buys</th></tr></thead>
+  <tbody>
+    <tr><td>Clinical ops + tumor board</td><td class="num">3–4</td><td>Senior clinical leads, tumor-board cadence, oncology scientist input, employed oncologist(s), multi-state licensure operations</td></tr>
+    <tr><td>Lab + sample logistics</td><td class="num">2–3</td><td>RCRF MSA execution + Travera lab continuity + AMC tissue triage infrastructure + tissue audit pilot + vendor pass-throughs</td></tr>
+    <tr><td>Product / data workflow</td><td class="num">2–3</td><td>Patient-portal v0–v1, longitudinal dashboard, FHIR/USCDI connectors, vendor metadata, tumor-board orchestration software</td></tr>
+    <tr><td>AI decision-support tooling</td><td class="num">1–2</td><td>Clinical informatics PM + 1–2 retrieval/ranking engineers + part-time oncology scientist input + LLM communication layer</td></tr>
+    <tr><td>GTM / channel development</td><td class="num">1–2</td><td>AMC embedding (DFCI, Vanderbilt, UCSF), RCRF deepening, referral pipelines, selective concierge channel, brand/identity light</td></tr>
+    <tr><td>Regulatory / reimbursement / legal</td><td class="num">1–2</td><td>Variantyx distributed-CLIA setup, billing setup, IND/expanded-access counsel, RCRF MSA + custodial + DUA/BAA, state-law counsel</td></tr>
+    <tr><td>Contingency / G&amp;A</td><td class="num">1–2</td><td>Tissue-pilot expansion buffer, vendor surprises, hiring lift, finance/HR/ops, office, insurance</td></tr>
+    <tr class="total"><td>Total</td><td class="num">12–15</td><td>Operating seed (cap-table cleanup separate)</td></tr>
+  </tbody>
+</table>
+
+<h3>18-month milestone path (2 tranches, 4 operational phases)</h3>
+
+<p style="font-size:13.5px; color:var(--muted); margin: 6px 0 4px;"><strong>Tranche structure:</strong> T1 = M 0–12 (Foundation + Operational); T2 = M 12–18 (Evidence). The 4 operational phases below are the internal rhythm; tranches gate capital release at the inflection points.</p>
+
+<div class="timeline-bar" style="grid-template-columns: 1fr 1fr 2fr 2fr;">
+  <div class="stage p1"><div class="name">M 0–3</div><div class="months">FOUNDATION · T1</div><div class="what">Hire, contract, scaffold</div></div>
+  <div class="stage p2"><div class="name">M 3–6</div><div class="months">FIRST CASES · T1</div><div class="what">10 learning cases · platform v0 · SOPs</div></div>
+  <div class="stage p3"><div class="name">M 6–12</div><div class="months">OPERATIONAL · T1</div><div class="what">25–30 paying · weekly TB · access live</div></div>
+  <div class="stage p4"><div class="name">M 12–18</div><div class="months">EVIDENCE · T2</div><div class="what">75–100 episodes · outcomes register · pharma SOW</div></div>
+</div>
+
+<table>
+  <thead><tr><th>Phase</th><th>Milestones</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Month 0–3 · Foundation</strong><br><span class="badge">T1</span></td>
+      <td>
+        <ul>
+          <li>Final structural decision (Option A vs. B); close the seed round</li>
+          <li>Finalize RCRF MSA + tissue/custodial + DUA/BAA</li>
+          <li>Hire: senior clinical lead, senior drug-access lead, clinical informatics PM, operations / coordination lead</li>
+          <li>Travera lab continuity intact - no service disruption</li>
+          <li>Kick off Variantyx distributed-CLIA scoping workstream</li>
+          <li>Per-AMC named-person mapping at DFCI + Vanderbilt</li>
+          <li>Vendor RFP package out (Tempus xE/xR, Personalis, Caris, FoundationOne, Variantyx)</li>
+          <li>Outside counsel retained (FDA / state-medical-board / healthcare compliance)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Month 3–6 · First cases</strong><br><span class="badge">T1</span></td>
+      <td>
+        <ul>
+          <li>Platform v0 in private beta (patient portal, tumor-board input format, longitudinal dashboard skeleton, FHIR/USCDI scaffold)</li>
+          <li>Onboard first 10 learning cases - primarily AMC + RCRF sourced</li>
+          <li>AMC tissue SOPs drafted and operating (ovarian + sarcoma indication-specific)</li>
+          <li>AMC tissue audit pilot launched (20–30 cases) at DFCI + Vanderbilt</li>
+          <li>Indication-specific test menus published; vendor RFPs returned and shortlist contracted</li>
+          <li>Drug-access lead establishes initial sponsor medical-affairs relationships</li>
+          <li>Registry-discount policy doc codified</li>
+          <li>Maximal-tier definition document published</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Month 6–12 · Operational</strong><br><span class="badge">T1 (end)</span></td>
+      <td>
+        <ul>
+          <li>25–30 paying patients (first commercial revenue cohort; dollar projections modeled separately once pricing is locked)</li>
+          <li>Weekly tumor board operational</li>
+          <li>Drug-access function live with 4-lane architecture; 2–3 access specialists hired; managed-access partner contracted (1–2 of myTomorrows / Clinigen / Inceptua)</li>
+          <li>Add UCSF as third AMC anchor; selective concierge channel open</li>
+          <li>Variantyx distributed-CLIA reporting live for paired functional+molecular; first reimbursement claims submitted</li>
+          <li>Foundation MOU(s) signed (sarcoma alliance, ovarian cancer research alliance, or similar)</li>
+          <li>1 lighthouse pharma drug-donation arrangement in negotiation</li>
+          <li>First monitoring subscription enrollments - target ~50 patients on subscription by end of T1 (month 12)</li>
+          <li>Dashboard v1 in production</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Month 12–18 · Evidence</strong><br><span class="badge">T2</span></td>
+      <td>
+        <ul>
+          <li>75–100 completed paying episodes (revenue weighted toward year-2 mix; dollar projections modeled once pricing is locked)</li>
+          <li>First outcomes register published - format, audience, journal vs. self-publication decided in late T1 (M 9–12) prep</li>
+          <li>First pharma services SOW or data partnership signed</li>
+          <li>1–2 lighthouse pharma drug-donation arrangements producing supply</li>
+          <li>Decision-change documentation accumulated - first internal report on how often our recommendation diverged from local plan and was acted on</li>
+          <li>Monitoring subscription on first 75+ patients; recurring-revenue mechanics demonstrated</li>
+          <li>Variantyx distributed-CLIA reporting mature; reimbursement offset modeled empirically by indication</li>
+          <li>First VBC / progressive-payer conversation initiated (carryover from Thread A's end-of-seed ambition; valid here if outcomes substrate supports it)</li>
+          <li>Next-round prep: CFO hire (or equivalent), financial reporting investor-grade, next-round narrative drafted</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>What this plan deliberately does not commit to</h3>
+<ul>
+  <li><strong>Patient counts above 100 by month 18.</strong> Capacity is sized to deliver the 75–100 target with quality; pushing higher requires additional capital and would compromise the "recommendations change decisions" proof point.</li>
+  <li><strong>Geographic expansion beyond DFCI/Vanderbilt/UCSF anchors.</strong> The Thread A "coast-to-coast metros" framing (CA, NY, FL, TX, IL, WA) is a post-seed scaling ambition, not a seed-window deliverable.</li>
+  <li><strong>Foundation-model production deployment.</strong> v1 is a retrieval/ranking copilot under human supervision. Foundation-model push is the post-seed bet; the labeled dataset accumulating during T1–T2 is its substrate.</li>
+  <li><strong>Path 2 (employer benefits) or Path 3 (broad reimbursement scale).</strong> Both are post-seed motions in this framing. Path 1 (patient cash + AMC-channeled) is the seed-window focus.</li>
+</ul>
+
+<div class="panel warn">
+<strong>What this plan is sensitive to.</strong> Variantyx distributed-CLIA timeline (6–12 mo on mature workflow; longer for new assays) - if it slips, reimbursement offset doesn't materialize on schedule. RCRF MSA timing - if state-law counsel review extends past month 3, tissue logistics for first 10 cases slip. Senior clinical lead hire - if the right MD oncology lead can't be hired by month 3, first-10-case learning is degraded. Cap-table cleanup negotiation - if Option A path collapses, structural pivot to Option B reshapes the plan timing.</div>
+</section>
+
+<!-- ============================ 19. RISKS ============================ -->
+<section id="risks">
+<h2><span class="num">19.</span> Risk register</h2>
+
+<h3>Operational risks</h3>
+
+<div class="panel warn">
+<strong>Multi-state telemedicine prescribing complexity.</strong> CA and NY are non-IMLC; each requires independent licensure for each employed oncologist. The clinic needs internal counsel + licensing operations function from day 1 - none of the original seed documents quantified this with sufficient depth. <strong>Mitigation:</strong> hire ops lead with prior multi-state telemed experience as priority T1 hire; outside counsel retained for state-medical-board work from close.</div>
+
+<div class="panel warn">
+<strong>Team retention at Travera.</strong> Rob has flagged that another short sprint without commitment will likely break the team. The seed-round timing is itself a retention lever. <strong>Mitigation:</strong> close the seed expeditiously; deliver Rob the agency he's flagged (Option A path preferred); equity refresh structured into the close.</div>
+
+<div class="panel warn">
+<strong>AMC tissue-triage relationships not real until named-person mapping is complete.</strong> "If we don't have named people in each of seven embedded roles at each AMC, the tissue pipeline isn't real yet." <strong>Mitigation:</strong> AMC named-person mapping is an explicit T1 deliverable, not a research question.</div>
+
+<div class="panel warn">
+<strong>Senior clinical lead + senior access lead hiring delays.</strong> Both are T1 priority hires; the JD/MD profile for the access lead is narrow. <strong>Mitigation:</strong> KV recruiting network active from day 1; back-channel candidates identified pre-close; fractional outside-counsel option as interim access lead while permanent search runs.</div>
+
+<h3>Clinical / scientific risks</h3>
+
+<div class="panel warn">
+<strong>Functional + molecular timing conflict.</strong> Functional requires live tissue within ~24 hours; drug panel must be pre-selected before the resection biopsy lands. If the workflow doesn't synchronize, the functional layer is degraded. <strong>Mitigation:</strong> pre-procedure tissue SOPs per indication; "drug panel pre-loaded by molecular pre-read" workflow built into the platform v0 spec.</div>
+
+<div class="panel warn">
+<strong>Decision-change rate isn't dramatic enough.</strong> Our recommendation diverges from local plan in &lt;X% of cases (X to be determined empirically) - if too low, the case for any premium cash-pay price weakens. <strong>Mitigation:</strong> first-10-case learning specifically calibrates this rate; if low, the indication wedge or workup depth may need adjustment before scaling.</div>
+
+<div class="panel warn">
+<strong>Tissue scarcity / "leftover tissue" trap.</strong> CLIA retention requires pathology remnants preserved ≥2 years; CAP often requires paraffin blocks ~10 years. AMC pathology is conservative about release. <strong>Mitigation:</strong> pre-procedure tissue SOPs (diagnostic reserve, live-cell aliquot priority, FFPE backup, sign-off rules) drafted in T1, codified per indication; AMC tissue audit pilot validates the SOPs empirically.</div>
+
+<h3>Commercial risks</h3>
+
+<div class="panel warn">
+<strong>Patient acquisition slower than modeled.</strong> 75–100 episodes in 18 months requires AMC + RCRF + selective concierge channels firing. <strong>Mitigation:</strong> three independent channels reduce single-channel risk; mid-T1 reserves include marketing contingency; if patient acquisition is significantly behind plan at month 9, redirect spend or revisit indication wedge.</div>
+
+<div class="panel warn">
+<strong>Reimbursement offset doesn't materialize on schedule.</strong> CMS national NGS coverage limited; Variantyx distributed-CLIA reporting timeline is 6–12 months on mature workflow. <strong>Mitigation:</strong> reimbursement modeled as partial offset only, not underwriting assumption; the core cash-pay model holds regardless.</div>
+
+<div class="panel warn">
+<strong>Pharma services SOWs slow to materialize.</strong> Drug-donation flywheel takes 6–12 months of relationship-building before donations flow predictably; pharma services contracting takes longer. <strong>Mitigation:</strong> senior access lead's first 12 months explicitly include relationship density; first pharma SOW is a month 12–18 milestone, not a month 6 milestone.</div>
+
+<h3>Structural / strategic risks</h3>
+
+<div class="panel warn">
+<strong>Cap-table cleanup cost discovery negative.</strong> If buyout negotiation with existing Travera investors comes in higher than expected (or fails entirely), Option A path collapses. <strong>Mitigation:</strong> cleanup is scoped separately from the $12–15M operating seed; operating plan can execute under Option B if cleanup is intractable. Begin negotiations early; lock buyout valuations before commitment to Option A.</div>
+
+<div class="panel warn">
+<strong>NGS-partner risk (Variantyx as lead candidate).</strong> The NGS slot isn't filled yet. Variantyx is the closest to confirmed but not signed, and even if signed, their commercial position is "solid for now" (Quest partnership keeps cancer program alive) rather than a forever bet. <strong>Mitigation:</strong> treat the slot as non-exclusive by design; the RFP shortlist (Tempus xE/xR, Personalis, Caris, FMI) is real backup routing, not a fallback; Travera lab is in-house and CLIA-certified independently, so a Variantyx pivot or sell-off disrupts the reimbursement timeline but not the ability to operate.</div>
+
+<div class="panel warn">
+<strong>Crowded N-of-1 competitive space.</strong> Multiple adjacent personalized-oncology ecosystems and KV portfolio neighbors all converging on N-of-1 directions. Differentiation rests on Travera (functional) + RCRF (tissue) + KV portfolio (drug supply). <strong>Mitigation:</strong> move quickly; defensibility is in the data accumulation, not the idea.</div>
+
+<div class="panel good">
+<strong>Upside scenario.</strong> If first-10-case learnings demonstrate decision-change rate above threshold + reimbursement offset materializes ahead of schedule + pharma drug-donation flywheel starts inside 9 months, the seed window ends with a stronger Series A narrative than modeled - and the next-round valuation could be substantially higher than the $300–600M pre-money the Thread A cash plan anticipated. Comparable cash-pay precedents' early traction (~$1.3M booked, ~13 patients in 6 months on the cash channel) suggests this upside is plausible.</div>
+</section>
+
+</main>
+</div>
+</div>
+
+</body>
+</html>
